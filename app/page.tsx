@@ -220,7 +220,7 @@ export default function Home() {
           />
 
           {/* 4. Hackathon Journey (Timeline) in SDG Position */}
-          <TimelineSection />
+          <TimelineSection onOpenRegister={handleOpenRegisterWithTrack} />
 
           {/* 5. Prizes & Trophies */}
           <PrizesSection onOpenRegister={() => handleOpenRegisterWithTrack()} />
@@ -260,7 +260,7 @@ export default function Home() {
     </div>
 
     {/* FLOATING REFERRAL GIFT */}
-    <ReferralGift />
+    <ReferralGift onOpenRegister={handleOpenRegisterWithTrack} />
     </>
   );
 }

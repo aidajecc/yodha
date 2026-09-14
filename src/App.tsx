@@ -181,7 +181,7 @@ function App() {
             />
 
             {/* 4. Hackathon Journey (Timeline) */}
-            <TimelineSection />
+            <TimelineSection onOpenRegister={handleOpenRegisterWithTrack} />
 
             {/* 5. Prizes & Trophies */}
             <PrizesSection onOpenRegister={() => handleOpenRegisterWithTrack()} />

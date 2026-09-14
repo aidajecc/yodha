@@ -5,7 +5,11 @@ import { ChevronRight, MousePointerClick } from "lucide-react";
 import { TIMELINE_PHASES } from "../data/timelineData";
 import type { PhaseItem } from "../data/timelineData";
 
-export function TimelineSection() {
+interface TimelineSectionProps {
+  onOpenRegister?: () => void;
+}
+
+export function TimelineSection({ onOpenRegister }: TimelineSectionProps) {
   const [continuousIndex, setContinuousIndex] = useState(0);
   const [lastInteractionTime, setLastInteractionTime] = useState(Date.now());
   const [hasEnteredView, setHasEnteredView] = useState<boolean>(false);
@@ -309,6 +313,19 @@ export function TimelineSection() {
 
           </div>
 
+        </div>
+
+        {/* Register Button Below the Journey */}
+        <div className="mt-16 flex justify-center pb-12 relative z-20">
+          <motion.button
+            type="button"
+            onClick={onOpenRegister}
+            animate={{ scale: [1, 1.05, 1] }}
+            transition={{ repeat: Infinity, duration: 1.5, ease: "easeInOut" }}
+            className="px-12 py-4 rounded-full bg-blue-600 hover:bg-blue-500 text-white font-mono text-base font-black tracking-widest uppercase cursor-pointer"
+          >
+            REGISTER NOW
+          </motion.button>
         </div>
 
       </div>
