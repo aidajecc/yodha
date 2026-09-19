@@ -230,7 +230,7 @@ export function TimelineSection({ onOpenRegister }: TimelineSectionProps) {
                     </h4>
                     {isEarlyBird && !isSelected && (
                       <p className="text-[11px] font-mono font-semibold text-amber-700 mt-1">
-                        ₹700 / team limited offer
+                        ₹700 / team • Ends Sep 21
                       </p>
                     )}
                   </button>
