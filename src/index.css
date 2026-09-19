@@ -136,6 +136,37 @@ input[type="submit"],
   animation: none !important;
 }
 
+/* Golden Blinking Animations for Early Bird Offer & Golden Hub */
+@keyframes goldenBorderBlink {
+  0%, 100% {
+    border-color: rgba(245, 158, 11, 0.95);
+    box-shadow: 0 0 18px rgba(245, 158, 11, 0.75), 0 0 35px rgba(251, 191, 36, 0.45), inset 0 0 10px rgba(245, 158, 11, 0.25);
+  }
+  50% {
+    border-color: rgba(253, 224, 71, 0.4);
+    box-shadow: 0 0 5px rgba(245, 158, 11, 0.2), 0 0 10px rgba(251, 191, 36, 0.1), inset 0 0 2px rgba(245, 158, 11, 0.08);
+  }
+}
+
+@keyframes goldenRingBlink {
+  0%, 100% {
+    border-color: rgba(251, 191, 36, 0.95);
+    box-shadow: 0 0 35px rgba(245, 158, 11, 0.8), 0 0 70px rgba(251, 191, 36, 0.5), inset 0 0 25px rgba(245, 158, 11, 0.35);
+  }
+  50% {
+    border-color: rgba(245, 158, 11, 0.35);
+    box-shadow: 0 0 12px rgba(245, 158, 11, 0.3), 0 0 25px rgba(251, 191, 36, 0.18), inset 0 0 8px rgba(245, 158, 11, 0.12);
+  }
+}
+
+.animate-golden-border-blink {
+  animation: goldenBorderBlink 1.4s ease-in-out infinite;
+}
+
+.animate-golden-ring-blink {
+  animation: goldenRingBlink 1.4s ease-in-out infinite;
+}
+
 .animate-marquee {
   display: flex;
   width: max-content;

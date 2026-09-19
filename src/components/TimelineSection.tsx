@@ -18,6 +18,7 @@ export function TimelineSection({ onOpenRegister }: TimelineSectionProps) {
   const childCount = TIMELINE_PHASES.length;
   const selectedIndex = ((continuousIndex % childCount) + childCount) % childCount;
   const selectedPhase = TIMELINE_PHASES[selectedIndex];
+  const isPhase1Selected = selectedPhase.id === 1;
 
   // Trigger entrance animation on scroll into view
   useEffect(() => {
@@ -92,8 +93,12 @@ export function TimelineSection({ onOpenRegister }: TimelineSectionProps) {
             transition={{ duration: 0.6, delay: 0.1 }}
             className="flex items-center justify-center max-w-2xl mx-auto pt-1"
           >
-            <div className="inline-flex items-center gap-2 bg-blue-100 border border-blue-300 text-blue-800 px-4 py-1.5 rounded-full text-xs font-mono font-bold shadow-sm">
-              <span className="font-extrabold">{selectedPhase.phaseId}</span> • <span>Auto-playing phases</span>
+            <div className={`inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-mono font-bold shadow-sm transition-all duration-300 ${
+              isPhase1Selected
+                ? "bg-amber-100 border border-amber-300 text-amber-900 shadow-[0_0_15px_rgba(245,158,11,0.25)]"
+                : "bg-blue-100 border border-blue-300 text-blue-800"
+            }`}>
+              <span className="font-extrabold">{selectedPhase.phaseId}</span> • <span>{isPhase1Selected ? "Early Bird Offer Active" : "Auto-playing phases"}</span>
             </div>
           </motion.div>
         </div>
@@ -115,6 +120,7 @@ export function TimelineSection({ onOpenRegister }: TimelineSectionProps) {
               const lineStartY = Math.sin(angle) * hubRadius;
 
               const isHighlighted = selectedIndex === idx;
+              const isEarlyBird = phase.id === 1;
 
               return (
                 <g key={`svg-line-${idx}`}>
@@ -125,7 +131,11 @@ export function TimelineSection({ onOpenRegister }: TimelineSectionProps) {
                     y2={`calc(50% + ${posY}px)`}
                     className={`transition-all duration-500 ${
                       isHighlighted
-                        ? "stroke-blue-600 stroke-[3px] filter drop-shadow-[0_0_12px_rgba(59,130,246,0.6)]"
+                        ? isEarlyBird
+                          ? "stroke-amber-400 stroke-[3.5px] filter drop-shadow-[0_0_14px_rgba(245,158,11,0.85)]"
+                          : "stroke-blue-600 stroke-[3px] filter drop-shadow-[0_0_12px_rgba(59,130,246,0.6)]"
+                        : isEarlyBird
+                        ? "stroke-amber-400/60 stroke-[2px]"
                         : "stroke-blue-400/50 stroke-[1.5px]"
                     }`}
                   />
@@ -134,7 +144,13 @@ export function TimelineSection({ onOpenRegister }: TimelineSectionProps) {
                     cy={`calc(50% + ${posY}px)`}
                     r={isHighlighted ? "6" : "4"}
                     className={`transition-all duration-500 ${
-                      isHighlighted ? "fill-blue-600 stroke-white stroke-2" : "fill-blue-500"
+                      isHighlighted 
+                        ? isEarlyBird 
+                          ? "fill-amber-400 stroke-white stroke-2 shadow-lg" 
+                          : "fill-blue-600 stroke-white stroke-2" 
+                        : isEarlyBird
+                        ? "fill-amber-500 stroke-amber-200 stroke-1"
+                        : "fill-blue-500"
                     }`}
                   />
                 </g>
@@ -149,6 +165,7 @@ export function TimelineSection({ onOpenRegister }: TimelineSectionProps) {
               const posX = Math.cos(angle) * desktopRx;
               const posY = Math.sin(angle) * desktopRy;
               const isSelected = selectedIndex === idx;
+              const isEarlyBird = phase.id === 1;
 
               return (
                 <motion.div
@@ -165,29 +182,57 @@ export function TimelineSection({ onOpenRegister }: TimelineSectionProps) {
                   <button
                     type="button"
                     onClick={() => handleSelectPhase(phase, idx)}
-                    className={`w-72 rounded-3xl p-6 text-left transition-all duration-300 cursor-pointer backdrop-blur-2xl border ${
-                      isSelected
+                    className={`w-72 rounded-3xl p-6 text-left transition-all duration-300 cursor-pointer backdrop-blur-2xl border relative overflow-hidden ${
+                      isEarlyBird
+                        ? isSelected
+                          ? "bg-gradient-to-br from-amber-500 via-amber-600 to-yellow-600 border-2 border-amber-300 text-white shadow-[0_15px_45px_rgba(245,158,11,0.5)] animate-golden-border-blink"
+                          : "bg-white/95 border-2 border-amber-400 shadow-[0_10px_35px_rgba(245,158,11,0.25)] hover:bg-white hover:border-amber-300 hover:shadow-[0_20px_45px_rgba(245,158,11,0.4)] hover:scale-105 animate-golden-border-blink"
+                        : isSelected
                         ? "bg-blue-600 border-blue-500 shadow-[0_15px_40px_rgba(59,130,246,0.35)] text-white"
                         : "bg-white/90 border-blue-200/90 shadow-[0_10px_35px_rgba(59,130,246,0.1)] hover:bg-white hover:border-blue-400 hover:shadow-[0_20px_45px_rgba(59,130,246,0.2)] hover:scale-105"
                     }`}
                   >
                     <div className="flex items-center justify-between mb-2">
-                      <span className={`text-xs font-mono font-black uppercase tracking-widest ${isSelected ? "text-blue-200" : "text-blue-600"}`}>
-                        {phase.phaseId}
-                      </span>
+                      <div className="flex items-center gap-1.5">
+                        <span className={`text-xs font-mono font-black uppercase tracking-widest ${
+                          isEarlyBird
+                            ? isSelected ? "text-amber-100" : "text-amber-600"
+                            : isSelected ? "text-blue-200" : "text-blue-600"
+                        }`}>
+                          {phase.phaseId}
+                        </span>
+                        {isEarlyBird && (
+                          <span className={`text-[9px] font-mono font-black uppercase px-2 py-0.5 rounded-full border flex items-center gap-0.5 ${
+                            isSelected
+                              ? "bg-amber-400/30 border-amber-200 text-amber-100 shadow-sm"
+                              : "bg-amber-100 border-amber-300 text-amber-800 shadow-sm"
+                          }`}>
+                            ★ OFFER
+                          </span>
+                        )}
+                      </div>
                       {!isSelected && (
                         <motion.div
                           animate={{ opacity: [0.2, 1, 0.2], x: [0, 4, 0] }}
                           transition={{ duration: 1.2, repeat: Infinity, ease: "easeInOut" }}
-                          className="flex items-center text-blue-600 font-mono text-[11px] font-bold"
+                          className={`flex items-center font-mono text-[11px] font-bold ${
+                            isEarlyBird ? "text-amber-600" : "text-blue-600"
+                          }`}
                         >
-                          <ChevronRight className="w-5 h-5 text-blue-600 stroke-[2.5]" />
+                          <ChevronRight className={`w-5 h-5 stroke-[2.5] ${
+                            isEarlyBird ? "text-amber-600" : "text-blue-600"
+                          }`} />
                         </motion.div>
                       )}
                     </div>
                     <h4 className={`text-base font-bold font-heading leading-snug ${isSelected ? "text-white" : "text-slate-950"}`}>
                       {phase.title}
                     </h4>
+                    {isEarlyBird && !isSelected && (
+                      <p className="text-[11px] font-mono font-semibold text-amber-700 mt-1">
+                        ₹700 / team limited offer
+                      </p>
+                    )}
                   </button>
                 </motion.div>
               );
@@ -197,11 +242,19 @@ export function TimelineSection({ onOpenRegister }: TimelineSectionProps) {
           {/* STATIONARY MAIN CENTER CIRCLE (HIGHER Z-INDEX z-40 + PURE GLASSMORPHISM WITHOUT SOLID BACKGROUND) */}
           <div className="relative z-40 flex items-center justify-center">
             <div className="w-[360px] h-[360px] rounded-full relative p-1.5 flex items-center justify-center">
-              {/* Outer Glowing Blue Ring Accent */}
-              <div className="absolute inset-0 rounded-full border-4 border-blue-500/80 shadow-[0_0_45px_rgba(59,130,246,0.35)] pointer-events-none" />
+              {/* Outer Glowing Blue or Golden Ring Accent with Blinking Borders */}
+              <div className={`absolute inset-0 rounded-full pointer-events-none transition-all duration-500 ${
+                isPhase1Selected
+                  ? "border-4 border-amber-400 animate-golden-ring-blink"
+                  : "border-4 border-blue-500/80 shadow-[0_0_45px_rgba(59,130,246,0.35)]"
+              }`} />
 
               {/* Inner Pure Glass Center Disc (No solid bg fill, pure glassmorphism) */}
-              <div className="w-full h-full rounded-full bg-slate-950/40 backdrop-blur-2xl border border-blue-400/50 shadow-[0_20px_60px_rgba(59,130,246,0.3)] flex flex-col items-center justify-center p-6 text-center relative overflow-hidden text-white">
+              <div className={`w-full h-full rounded-full backdrop-blur-2xl flex flex-col items-center justify-center p-6 text-center relative overflow-hidden text-white transition-all duration-500 ${
+                isPhase1Selected
+                  ? "bg-gradient-to-b from-amber-950/40 via-slate-950/50 to-amber-950/30 border-2 border-amber-400 animate-golden-border-blink"
+                  : "bg-slate-950/40 border border-blue-400/50 shadow-[0_20px_60px_rgba(59,130,246,0.3)]"
+              }`}>
                 <AnimatePresence mode="wait">
                   <motion.div
                     key={`phase-detail-${selectedPhase.id}`}
@@ -211,17 +264,36 @@ export function TimelineSection({ onOpenRegister }: TimelineSectionProps) {
                     transition={{ duration: 0.3 }}
                     className="flex flex-col items-center justify-center max-w-[270px] space-y-2 relative z-10"
                   >
-                    <span className="text-[10px] font-mono font-extrabold text-blue-400 tracking-[0.25em] uppercase drop-shadow-[0_0_8px_rgba(59,130,246,0.8)]">
-                      {selectedPhase.phaseId}
-                    </span>
+                    <div className="flex items-center gap-2">
+                      <span className={`text-[10px] font-mono font-extrabold tracking-[0.25em] uppercase ${
+                        isPhase1Selected
+                          ? "text-amber-300 drop-shadow-[0_0_10px_rgba(251,191,36,0.9)]"
+                          : "text-blue-400 drop-shadow-[0_0_8px_rgba(59,130,246,0.8)]"
+                      }`}>
+                        {selectedPhase.phaseId}
+                      </span>
+                      {isPhase1Selected && (
+                        <span className="text-[9px] font-mono font-black uppercase px-2 py-0.5 rounded-full bg-amber-400/25 border border-amber-300/80 text-amber-200 shadow-[0_0_10px_rgba(245,158,11,0.5)]">
+                          ★ SPECIAL OFFER
+                        </span>
+                      )}
+                    </div>
                     
-                    <h3 className="text-xl sm:text-2xl font-black font-heading text-white tracking-tight leading-tight drop-shadow-md">
+                    <h3 className={`text-xl sm:text-2xl font-black font-heading tracking-tight leading-tight drop-shadow-md ${
+                      isPhase1Selected ? "text-amber-100 drop-shadow-[0_0_15px_rgba(245,158,11,0.4)]" : "text-white"
+                    }`}>
                       {selectedPhase.title}
                     </h3>
 
-                    <div className="w-12 h-[1px] bg-blue-400/60 my-2" />
+                    <div className={`w-12 h-[1px] my-2 transition-all duration-500 ${
+                      isPhase1Selected
+                        ? "bg-gradient-to-r from-transparent via-amber-400 to-transparent shadow-[0_0_8px_rgba(245,158,11,0.8)]"
+                        : "bg-blue-400/60"
+                    }`} />
 
-                    <p className="text-sm text-slate-200 font-sans leading-relaxed font-normal max-w-[270px] drop-shadow-sm">
+                    <p className={`text-sm font-sans leading-relaxed font-normal max-w-[270px] drop-shadow-sm ${
+                      isPhase1Selected ? "text-amber-100/90" : "text-slate-200"
+                    }`}>
                       {selectedPhase.description}
                     </p>
                   </motion.div>
@@ -240,7 +312,11 @@ export function TimelineSection({ onOpenRegister }: TimelineSectionProps) {
           <div className="relative w-[340px] h-[340px] sm:w-[400px] sm:h-[400px] flex items-center justify-center">
 
             {/* MOBILE MAIN CENTER HUB DISC (HIGHER Z-INDEX z-40 + PURE GLASSMORPHISM WITHOUT SOLID BACKGROUND) */}
-            <div className="w-[170px] h-[170px] sm:w-[200px] sm:h-[200px] rounded-full bg-slate-950/40 backdrop-blur-2xl border-4 border-blue-500/80 shadow-[0_12px_40px_rgba(59,130,246,0.3)] flex flex-col items-center justify-center p-4 text-center z-40 relative overflow-hidden text-white">
+            <div className={`w-[170px] h-[170px] sm:w-[200px] sm:h-[200px] rounded-full backdrop-blur-2xl flex flex-col items-center justify-center p-4 text-center z-40 relative overflow-hidden text-white transition-all duration-500 ${
+              isPhase1Selected
+                ? "bg-gradient-to-b from-amber-950/50 via-slate-950/60 to-amber-950/40 border-4 border-amber-400 animate-golden-ring-blink"
+                : "bg-slate-950/40 border-4 border-blue-500/80 shadow-[0_12px_40px_rgba(59,130,246,0.3)]"
+            }`}>
               <AnimatePresence mode="wait">
                 <motion.div
                   key={`mob-phase-summary-${selectedPhase.id}`}
@@ -250,17 +326,32 @@ export function TimelineSection({ onOpenRegister }: TimelineSectionProps) {
                   transition={{ duration: 0.3 }}
                   className="flex flex-col items-center justify-center max-w-[140px] sm:max-w-[170px] space-y-1 relative z-10"
                 >
-                  <span className="text-[9px] sm:text-[10px] font-mono font-extrabold text-blue-400 tracking-wider uppercase text-center">
-                    {selectedPhase.phaseId}
-                  </span>
+                  <div className="flex items-center gap-1">
+                    <span className={`text-[9px] sm:text-[10px] font-mono font-extrabold tracking-wider uppercase text-center ${
+                      isPhase1Selected ? "text-amber-300 drop-shadow-[0_0_8px_rgba(251,191,36,0.9)]" : "text-blue-400"
+                    }`}>
+                      {selectedPhase.phaseId}
+                    </span>
+                    {isPhase1Selected && (
+                      <span className="text-[7px] font-mono font-black uppercase px-1 rounded bg-amber-400/30 text-amber-200">
+                        OFFER
+                      </span>
+                    )}
+                  </div>
 
-                  <h3 className="text-[11px] sm:text-sm font-black font-heading text-white leading-tight text-center line-clamp-2">
+                  <h3 className={`text-[11px] sm:text-sm font-black font-heading leading-tight text-center line-clamp-2 ${
+                    isPhase1Selected ? "text-amber-100" : "text-white"
+                  }`}>
                     {selectedPhase.title}
                   </h3>
 
-                  <div className="w-6 h-[1px] bg-blue-400/60 my-0.5" />
+                  <div className={`w-6 h-[1px] my-0.5 ${
+                    isPhase1Selected ? "bg-amber-400/80 shadow-[0_0_6px_rgba(245,158,11,0.8)]" : "bg-blue-400/60"
+                  }`} />
 
-                  <p className="text-[8px] sm:text-[9px] text-slate-200 font-sans leading-tight font-normal text-center line-clamp-2">
+                  <p className={`text-[8px] sm:text-[9px] font-sans leading-tight font-normal text-center line-clamp-2 ${
+                    isPhase1Selected ? "text-amber-100/90" : "text-slate-200"
+                  }`}>
                     {selectedPhase.description}
                   </p>
                 </motion.div>
@@ -279,6 +370,7 @@ export function TimelineSection({ onOpenRegister }: TimelineSectionProps) {
                 const posX = Math.cos(mobAngle) * mobRadius;
                 const posY = Math.sin(mobAngle) * mobRadius;
                 const isSelected = selectedIndex === idx;
+                const isEarlyBird = phase.id === 1;
 
                 return (
                   <motion.div
@@ -296,7 +388,11 @@ export function TimelineSection({ onOpenRegister }: TimelineSectionProps) {
                         type="button"
                         onClick={() => handleSelectPhase(phase, idx)}
                         className={`w-14 h-14 sm:w-16 sm:h-16 rounded-full flex flex-col items-center justify-center transition-all duration-300 cursor-pointer backdrop-blur-xl border ${
-                          isSelected
+                          isEarlyBird
+                            ? isSelected
+                              ? "bg-gradient-to-br from-amber-500 to-yellow-500 border-2 border-amber-300 text-white shadow-[0_0_25px_rgba(245,158,11,0.8)] ring-2 ring-amber-300 animate-golden-border-blink"
+                              : "bg-white/95 border-2 border-amber-400 text-amber-700 shadow-[0_6px_20px_rgba(245,158,11,0.35)] hover:border-amber-300 animate-golden-border-blink"
+                            : isSelected
                             ? "bg-blue-600 border-blue-400 text-white shadow-[0_0_20px_rgba(59,130,246,0.6)] ring-2 ring-blue-300"
                             : "bg-white/95 border-blue-500 text-blue-700 shadow-[0_6px_20px_rgba(59,130,246,0.25)] hover:border-blue-400"
                         }`}
@@ -304,6 +400,11 @@ export function TimelineSection({ onOpenRegister }: TimelineSectionProps) {
                         <span className="font-mono text-[9px] sm:text-[10px] font-black uppercase leading-tight tracking-tight">
                           {phase.phaseId.replace("PHASE", "PH")}
                         </span>
+                        {isEarlyBird && (
+                          <span className="text-[7px] font-mono font-bold leading-none text-amber-600">
+                            ★
+                          </span>
+                        )}
                       </button>
                     </motion.div>
                   </motion.div>
