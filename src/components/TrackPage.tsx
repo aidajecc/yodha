@@ -34,7 +34,7 @@ export function TrackPage({ onBack, onOpenRegisterWithTrack }: TrackPageProps) {
   };
 
   return (
-    <div className="min-h-screen bg-transparent text-white py-6 sm:py-10 px-4 sm:px-6 lg:px-8 relative overflow-x-hidden select-none">
+    <div className="min-h-screen bg-transparent text-white py-6 sm:py-10 px-4 sm:px-6 lg:px-8 relative overflow-x-hidden select-text">
       
       {/* OUR NIGHT HILLS THEME BACKGROUND IMAGE LAYER */}
       <div className="fixed inset-0 w-full h-full pointer-events-none z-0 overflow-hidden">
@@ -55,7 +55,7 @@ export function TrackPage({ onBack, onOpenRegisterWithTrack }: TrackPageProps) {
         <div className="flex items-center justify-between mb-6 sm:mb-10 pt-2">
           <button
             onClick={onBack}
-            className="flex items-center gap-2 px-4 py-2 rounded-full bg-[#081122]/80 border border-blue-500/35 text-slate-200 hover:text-white font-mono text-xs font-medium uppercase tracking-wider cursor-pointer hover:border-blue-400 transition-all shadow-lg backdrop-blur-xl"
+            className="flex items-center gap-2 px-4 py-2 rounded-full bg-[#081122]/80 border border-blue-500/35 text-slate-200 hover:text-white font-mono text-xs font-medium uppercase tracking-wider cursor-pointer hover:border-blue-400 transition-all shadow-lg backdrop-blur-xl select-none"
           >
             <ArrowLeft className="w-3.5 h-3.5 text-blue-400" />
             <span>BACK TO HOME</span>
@@ -112,7 +112,7 @@ export function TrackPage({ onBack, onOpenRegisterWithTrack }: TrackPageProps) {
                 key={st.id}
                 layout
                 transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
-                className={`rounded-3xl transition-all duration-300 relative overflow-hidden flex flex-col justify-between ${
+                className={`rounded-3xl transition-all duration-300 relative overflow-hidden flex flex-col justify-between select-text ${
                   isExpanded
                     ? "col-span-1 md:col-span-2 lg:col-span-3 bg-transparent border-2 border-blue-400/80 p-6 sm:p-8 backdrop-blur-sm shadow-[0_0_50px_rgba(59,130,246,0.25)]"
                     : "col-span-1 bg-transparent border border-blue-500/35 hover:border-blue-400/80 backdrop-blur-sm p-4 sm:p-5"
@@ -170,17 +170,17 @@ export function TrackPage({ onBack, onOpenRegisterWithTrack }: TrackPageProps) {
                       animate={{ opacity: 1, y: 0 }}
                       exit={{ opacity: 0, y: 10 }}
                       transition={{ duration: 0.25 }}
-                      className="w-full space-y-6"
+                      className="w-full space-y-6 select-text"
                     >
                       {/* Top Header Controls: ID Label + Icon-Only Collapse Button */}
                       <div className="flex items-center justify-between border-b border-blue-500/25 pb-3">
-                        <span className="px-3.5 py-1 rounded-full text-xs font-mono font-bold bg-blue-950/80 text-blue-300 border border-blue-500/40">
+                        <span className="px-3.5 py-1 rounded-full text-xs font-mono font-bold bg-blue-950/80 text-blue-300 border border-blue-500/40 select-text">
                           ID #{st.id.toString().padStart(2, "0")} &nbsp;|&nbsp; {subCategory}
                         </span>
 
                         <button
                           onClick={() => toggleExpand(st.id)}
-                          className="p-1.5 sm:p-2 rounded-full bg-blue-500/20 hover:bg-blue-500/40 text-blue-300 hover:text-white transition-colors cursor-pointer"
+                          className="p-1.5 sm:p-2 rounded-full bg-blue-500/20 hover:bg-blue-500/40 text-blue-300 hover:text-white transition-colors cursor-pointer select-none"
                           aria-label="Collapse"
                           title="Collapse"
                         >
@@ -266,7 +266,7 @@ export function TrackPage({ onBack, onOpenRegisterWithTrack }: TrackPageProps) {
                           <div className="pt-4">
                             <button
                               onClick={() => onOpenRegisterWithTrack("Healthcare AI")}
-                              className="w-full sm:w-auto px-8 py-3.5 rounded-full bg-gradient-to-r from-blue-600 via-blue-500 to-sky-600 text-white font-mono text-xs font-bold uppercase tracking-widest flex items-center justify-center gap-2 cursor-pointer hover:scale-105 transition-all shadow-xl active:scale-95 group/btn"
+                              className="w-full sm:w-auto px-8 py-3.5 rounded-full bg-gradient-to-r from-blue-600 via-blue-500 to-sky-600 text-white font-mono text-xs font-bold uppercase tracking-widest flex items-center justify-center gap-2 cursor-pointer hover:scale-105 transition-all shadow-xl active:scale-95 group/btn select-none"
                             >
                               <span>REGISTER NOW</span>
                               <ArrowRight className="w-4 h-4 text-white group-hover/btn:translate-x-1 transition-transform" />
