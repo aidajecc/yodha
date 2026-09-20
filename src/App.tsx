@@ -132,29 +132,19 @@ function App() {
     };
   }, []);
 
-  // Automatically open announcement popup 5 seconds after the site has loaded completely
+  // Automatically open announcement popup 2 seconds after the site has loaded completely
   useEffect(() => {
     if (isLoading) return;
 
-    try {
-      const hasSeen = sessionStorage.getItem("yodha_announcement_seen");
-      if (hasSeen === "true") return;
-    } catch {
-      // Storage access safety
-    }
-
     const timer = setTimeout(() => {
       setIsAnnouncementOpen(true);
-    }, 5000);
+    }, 2000);
 
     return () => clearTimeout(timer);
   }, [isLoading]);
 
   const handleCloseAnnouncement = () => {
     setIsAnnouncementOpen(false);
-    try {
-      sessionStorage.setItem("yodha_announcement_seen", "true");
-    } catch {}
   };
 
   return (

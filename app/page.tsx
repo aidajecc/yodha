@@ -24,6 +24,7 @@ import { PaymentPortalPage } from "@/components/PaymentPortalPage";
 import { trackUserSession } from "@/lib/firebase";
 
 import { ReferralGift } from "@/components/ReferralGift";
+import { ReferralAnnouncementModal } from "@/components/ReferralAnnouncementModal";
 
 export default function Home() {
   const [isLoading, setIsLoading] = useState(true);
@@ -37,6 +38,9 @@ export default function Home() {
   // Referral Dashboard & Room State
   const [referralDashboardCode, setReferralDashboardCode] = useState<string>("");
   const [isReferralDashboardOpen, setIsReferralDashboardOpen] = useState<boolean>(false);
+
+  // Auto Announcement Modal (opens 2 seconds after site loaded completely)
+  const [isAnnouncementOpen, setIsAnnouncementOpen] = useState<boolean>(false);
 
   // Preserve home page scroll position when opening dedicated sub-pages
   const homeScrollPosRef = useRef<number>(0);
@@ -152,6 +156,17 @@ export default function Home() {
     };
   }, []);
 
+  // Automatically open announcement popup 2 seconds after the site is loaded completely
+  useEffect(() => {
+    if (isLoading) return;
+
+    const timer = setTimeout(() => {
+      setIsAnnouncementOpen(true);
+    }, 2000);
+
+    return () => clearTimeout(timer);
+  }, [isLoading]);
+
   return (
     <>
     <div className="w-full min-h-screen bg-[#03060d] text-white selection:bg-blue-600 selection:text-white font-sans relative overflow-x-hidden">
@@ -256,6 +271,16 @@ export default function Home() {
         isOpen={isReferralDashboardOpen}
         onClose={() => setIsReferralDashboardOpen(false)}
         referralCode={referralDashboardCode}
+      />
+
+      {/* AUTO-POPUP REFERRAL & EARLY BIRD ANNOUNCEMENT (HIGHEST Z-INDEX) */}
+      <ReferralAnnouncementModal
+        isOpen={isAnnouncementOpen}
+        onClose={() => setIsAnnouncementOpen(false)}
+        onRegister={() => {
+          setIsAnnouncementOpen(false);
+          handleOpenRegisterWithTrack();
+        }}
       />
     </div>
 
