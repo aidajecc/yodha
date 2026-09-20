@@ -304,6 +304,7 @@ export function ReferralGift({ onOpenRegister }: { onOpenRegister?: () => void }
                   items={[
                     "Each team receives a unique referral code.",
                     "Other participants can register for the hackathon using a team's referral code.",
+                    "Teams must have at least 2 valid referred teams to be qualified for referral rewards.",
                     "The team with the highest number of valid referrals is eligible to receive the referral gift.",
                     "Only shortlisted teams are eligible for the gift.",
                     "If a non-shortlisted team has the highest referral count, they will not be eligible for the gift. The gift will instead go to the highest-referring shortlisted team.",

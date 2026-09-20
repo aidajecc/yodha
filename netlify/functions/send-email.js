@@ -144,7 +144,7 @@ function generateEmailHtml(data) {
             <div class="gold-title">🛡️ YOUR WARRIOR REFERRAL CODE</div>
             <div class="referral-code-display">${data.referralCode}</div>
             <p class="paragraph-text" style="font-size: 12.5px; margin-bottom: 0; color: #fef08a;">
-              Share this code with your friends and fellow innovators. Whenever another team registers using your Warrior Referral Code, they will automatically be linked to your referral room.
+              Share this code with your friends and fellow innovators. Whenever another team registers using your Warrior Referral Code, they will automatically be linked to your referral room. Note: Teams must have at least 2 valid referred teams to qualify for referral rewards.
             </p>
           </div>
 

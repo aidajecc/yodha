@@ -262,7 +262,7 @@ export function generateEmailTemplate(data: RegistrationEmailPayload): string {
                         Refer Teams & View Live Referral Roster
                       </div>
                       <p style="font-size: 13px; color: #fef08a; line-height: 1.6; margin: 8px 0 16px;">
-                        Share your unique referral code with fellow innovators! The shortlisted team with the highest number of valid referrals will receive a special gift.
+                        Share your unique referral code with fellow innovators! Teams must have at least 2 valid referred teams to qualify, and the shortlisted team with the highest number of valid referrals will receive a special gift.
                       </p>
                     </td>
                   </tr>

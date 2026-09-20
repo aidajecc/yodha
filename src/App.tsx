@@ -7,6 +7,7 @@ import { ScrollBackgroundManager } from "./components/ScrollBackgroundManager";
 import { IntroLoader } from "./components/IntroLoader";
 import { ReferralDashboardModal } from "./components/ReferralDashboardModal";
 import { ReferralGift } from "./components/ReferralGift";
+import { ReferralAnnouncementModal } from "./components/ReferralAnnouncementModal";
 
 // Lazy load non-hero sections below the fold for optimal initial load speed
 const AboutSection = lazy(() => import("./components/AboutSection").then((m) => ({ default: m.AboutSection })));
@@ -32,6 +33,9 @@ function App() {
   // Referral Dashboard & Room State
   const [referralDashboardCode, setReferralDashboardCode] = useState<string>("");
   const [isReferralDashboardOpen, setIsReferralDashboardOpen] = useState<boolean>(false);
+
+  // Auto Announcement Modal (opens 5 seconds after site loaded completely)
+  const [isAnnouncementOpen, setIsAnnouncementOpen] = useState<boolean>(false);
 
   // Preserve home page scroll position when opening dedicated sub-pages
   const homeScrollPosRef = useRef<number>(0);
@@ -128,6 +132,31 @@ function App() {
     };
   }, []);
 
+  // Automatically open announcement popup 5 seconds after the site has loaded completely
+  useEffect(() => {
+    if (isLoading) return;
+
+    try {
+      const hasSeen = sessionStorage.getItem("yodha_announcement_seen");
+      if (hasSeen === "true") return;
+    } catch {
+      // Storage access safety
+    }
+
+    const timer = setTimeout(() => {
+      setIsAnnouncementOpen(true);
+    }, 5000);
+
+    return () => clearTimeout(timer);
+  }, [isLoading]);
+
+  const handleCloseAnnouncement = () => {
+    setIsAnnouncementOpen(false);
+    try {
+      sessionStorage.setItem("yodha_announcement_seen", "true");
+    } catch {}
+  };
+
   return (
     <>
     <div className="w-full min-h-screen bg-[#03060d] text-white selection:bg-blue-600 selection:text-white font-sans relative overflow-x-hidden">
@@ -216,6 +245,16 @@ function App() {
         isOpen={isReferralDashboardOpen}
         onClose={() => setIsReferralDashboardOpen(false)}
         referralCode={referralDashboardCode}
+      />
+
+      {/* AUTO-POPUP REFERRAL & EARLY BIRD ANNOUNCEMENT (HIGHEST Z-INDEX) */}
+      <ReferralAnnouncementModal
+        isOpen={isAnnouncementOpen}
+        onClose={handleCloseAnnouncement}
+        onRegister={() => {
+          handleCloseAnnouncement();
+          handleOpenRegisterWithTrack();
+        }}
       />
     </div>
 

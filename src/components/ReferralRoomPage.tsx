@@ -282,6 +282,7 @@ export function ReferralRoomPage({ onBack, referralCode }: ReferralRoomPageProps
             <ol className="list-decimal pl-5 space-y-4 font-medium">
               <li>Each team receives a unique referral code.</li>
               <li>Other participants can register for the hackathon using a team's referral code.</li>
+              <li><strong className="text-amber-400">Qualification Requirement:</strong> Teams must have at least 2 valid referred teams to be qualified for referral rewards.</li>
               <li>The team with the highest number of valid referrals is eligible to receive the referral gift.</li>
               <li>Only shortlisted teams are eligible for the gift.</li>
               <li>If a non-shortlisted team has the highest referral count, they will not be eligible for the gift. The gift will instead go to the highest-referring shortlisted team.</li>
@@ -294,16 +295,17 @@ export function ReferralRoomPage({ onBack, referralCode }: ReferralRoomPageProps
                 <span className="text-blue-400">ℹ️</span> Example
               </h4>
               <ul className="space-y-3 font-mono text-sm bg-slate-950 p-4 rounded-xl border border-slate-800 text-slate-300">
-                <li><span className="font-bold text-white">Team A</span> — 50 valid referrals — shortlisted ✅</li>
-                <li><span className="font-bold text-white">Team B</span> — 70 valid referrals — not shortlisted ❌</li>
+                <li><span className="font-bold text-white">Team A</span> — 50 valid referrals — shortlisted ✅ (Eligible &amp; Winner)</li>
+                <li><span className="font-bold text-white">Team B</span> — 70 valid referrals — not shortlisted ❌ (Not eligible)</li>
+                <li><span className="font-bold text-white">Team C</span> — 1 valid referral — shortlisted ❌ (Below minimum 2 referrals)</li>
               </ul>
               <p className="mt-4 font-black text-emerald-400 bg-emerald-950/30 px-4 py-3 rounded-lg border border-emerald-500/30 inline-block">
-                Winner: Team A, because Team B is not shortlisted.
+                Winner: Team A, because Team B is not shortlisted and Team A meets the 2+ referrals requirement.
               </p>
             </div>
 
             <p className="mt-8 pt-6 border-t border-slate-700/50 text-center font-bold text-slate-200 text-lg">
-              Each team gets a unique referral code. Participants can share their code to bring new registrations to the hackathon. The shortlisted team with the highest number of valid referrals will receive a special gift.
+              Each team gets a unique referral code. Participants can share their code to bring new registrations to the hackathon. Teams must have at least 2 valid referred teams to qualify, and the shortlisted team with the highest number of valid referrals will receive a special gift.
             </p>
           </div>
         </motion.div>

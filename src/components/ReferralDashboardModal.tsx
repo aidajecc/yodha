@@ -203,6 +203,14 @@ export function ReferralDashboardModal({ isOpen, onClose, referralCode }: Referr
               </div>
             </div>
 
+            {/* MINIMUM QUALIFICATION NOTICE */}
+            <div className="p-3 rounded-xl bg-amber-950/30 border border-amber-400/40 text-xs font-sans text-amber-200 flex items-center gap-2.5 shadow-sm">
+              <span className="text-base">⭐</span>
+              <span>
+                <strong>Qualification Rule:</strong> Teams must refer <strong>at least 2 valid teams</strong> to be qualified for referral rewards.
+              </span>
+            </div>
+
             {/* REFERRED TEAMS LIST TABLE / CARDS */}
             <div className="space-y-3">
               <div className="flex items-center justify-between text-xs font-mono text-slate-400">
