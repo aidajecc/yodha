@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, Trophy, Sparkles, AlertCircle, ArrowRight, Clock, Flame } from "lucide-react";
+import { X, Trophy, AlertCircle, ArrowRight, Clock, Sparkles } from "lucide-react";
 
 interface ReferralAnnouncementModalProps {
   isOpen: boolean;
@@ -50,143 +50,110 @@ export function ReferralAnnouncementModal({
           role="dialog"
           aria-modal="true"
           aria-labelledby="announcement-modal-title"
-          className="fixed inset-0 z-[99999999] flex items-center justify-center p-3 sm:p-6 bg-[#03060d]/90 backdrop-blur-2xl overflow-y-auto"
+          className="fixed inset-0 z-[99999999] flex items-center justify-center p-4 sm:p-6 bg-slate-950/70 backdrop-blur-md overflow-y-auto"
         >
-          {/* AMBIENT BACKGROUND GLOWS */}
-          <div className="fixed inset-0 pointer-events-none overflow-hidden">
-            <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] sm:w-[750px] h-[350px] bg-blue-600/15 rounded-full blur-[140px]" />
-            <div className="absolute bottom-1/4 left-1/2 -translate-x-1/2 w-[500px] h-[260px] bg-amber-500/15 rounded-full blur-[130px]" />
-          </div>
-
           <motion.div
-            initial={{ opacity: 0, scale: 0.92, y: 24 }}
+            initial={{ opacity: 0, scale: 0.95, y: 16 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.92, y: 24 }}
-            transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
-            className="relative w-full max-w-2xl bg-[#060c1d]/95 border-2 border-blue-500/30 rounded-3xl p-5 sm:p-8 text-white shadow-[0_25px_70px_rgba(0,0,0,0.85),0_0_45px_rgba(59,130,246,0.25)] overflow-hidden max-h-[92vh] flex flex-col justify-between z-[100000000] select-text"
+            exit={{ opacity: 0, scale: 0.95, y: 16 }}
+            transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+            className="relative w-full max-w-xl bg-white rounded-3xl p-6 sm:p-8 text-slate-900 shadow-[0_25px_60px_rgba(0,0,0,0.35)] border border-slate-200 overflow-hidden flex flex-col justify-between z-[100000000] select-text"
           >
             {/* CLOSE BUTTON */}
             <button
               type="button"
               onClick={onClose}
               aria-label="Close Announcement"
-              className="absolute top-4 right-4 sm:top-6 sm:right-6 w-10 h-10 rounded-full bg-slate-900/90 border border-slate-700/80 hover:border-slate-500 flex items-center justify-center text-slate-400 hover:text-white transition-all cursor-pointer shadow-lg z-20 hover:scale-105 active:scale-95"
+              className="absolute top-4 right-4 sm:top-6 sm:right-6 w-10 h-10 rounded-full bg-slate-100 hover:bg-slate-200 border border-slate-200 flex items-center justify-center text-slate-600 hover:text-slate-900 transition-colors cursor-pointer shadow-sm z-20 hover:scale-105 active:scale-95"
             >
               <X className="w-5 h-5 stroke-[2.5]" />
             </button>
 
             {/* MODAL HEADER */}
-            <div className="pr-8 space-y-2 border-b border-slate-800/80 pb-5 shrink-0 relative z-10">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-gradient-to-r from-blue-500/20 to-amber-500/20 border border-blue-400/40 text-[10px] sm:text-xs font-mono font-bold tracking-wider uppercase text-blue-300 shadow-sm">
-                <Sparkles className="w-3.5 h-3.5 text-amber-400 animate-pulse" />
-                <span>SPECIAL ANNOUNCEMENT • YODHA 2.0</span>
+            <div className="text-center space-y-2.5 pb-4 border-b border-slate-100 shrink-0">
+              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-100 border border-blue-200 text-blue-800 text-xs font-mono font-bold uppercase tracking-wider">
+                <Sparkles className="w-3.5 h-3.5 text-amber-600" />
+                <span>Special Announcement</span>
               </div>
 
               <h2
                 id="announcement-modal-title"
-                className="font-heading font-black text-2xl sm:text-3xl lg:text-4xl text-white tracking-tight uppercase leading-tight"
+                className="font-heading text-2xl sm:text-3xl lg:text-4xl font-black text-slate-950 tracking-tight uppercase"
               >
-                REFERRAL REWARDS &amp; <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-300 via-amber-400 to-yellow-500">EARLY BIRD</span>
+                Referral Rewards &amp; <span className="text-blue-600 font-extrabold">Early Bird</span>
               </h2>
 
-              <p className="text-xs sm:text-sm text-slate-300 font-sans leading-relaxed">
-                Win exclusive gifts through our referral system and take advantage of our limited-time early registration offer.
-              </p>
+              <div className="h-1 w-20 bg-gradient-to-r from-blue-600 via-sky-400 to-amber-500 rounded-full mx-auto" />
             </div>
 
-            {/* SCROLLABLE BODY CONTENT */}
-            <div className="my-5 overflow-y-auto pr-1 space-y-5 flex-1 custom-scrollbar relative z-10">
+            {/* CONTENT AREA */}
+            <div className="my-5 space-y-4 text-slate-800 font-sans text-sm leading-relaxed">
               
-              {/* SECTION 1: REFERRAL REWARDS */}
-              <div className="p-4 sm:p-5 rounded-2xl bg-[#091227]/85 border border-blue-500/30 space-y-3.5">
-                <div className="flex items-center gap-2.5">
-                  <div className="w-8 h-8 rounded-xl bg-blue-500/20 border border-blue-400/50 flex items-center justify-center text-blue-400">
-                    <Trophy className="w-4 h-4 text-amber-400" />
-                  </div>
-                  <div>
-                    <h3 className="font-heading text-sm sm:text-base font-bold text-white uppercase tracking-wide">
-                      Warriors Referral Program
-                    </h3>
-                    <p className="text-[11px] font-mono text-blue-300">
-                      Share your code &amp; unlock mega referral gifts
-                    </p>
-                  </div>
+              {/* REFERRAL DETAILS */}
+              <div className="space-y-2">
+                <div className="flex items-center gap-2 text-slate-950 font-bold font-heading text-base uppercase">
+                  <Trophy className="w-5 h-5 text-amber-500" />
+                  <span>Referral Rewards Program</span>
                 </div>
+                <ul className="space-y-2 text-slate-700 pl-1 text-[13px] sm:text-sm">
+                  <li className="flex items-start gap-2">
+                    <span className="text-blue-600 font-bold">•</span>
+                    <span>Every team receives a unique <strong>Warrior Referral Code</strong> upon registering.</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="text-blue-600 font-bold">•</span>
+                    <span>Invite other teams to enter your code during registration to earn referral points.</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="text-blue-600 font-bold">•</span>
+                    <span>The shortlisted team with the highest number of valid referrals wins an exclusive <strong>Referral Gift</strong>.</span>
+                  </li>
+                </ul>
+              </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 text-xs font-sans text-slate-300">
-                  <div className="p-3 rounded-xl bg-slate-950/70 border border-slate-800">
-                    <span className="font-mono text-[10px] text-blue-400 font-bold block mb-1">01 • GET CODE</span>
-                    <span>Register your team to instantly receive your unique referral code.</span>
-                  </div>
-                  <div className="p-3 rounded-xl bg-slate-950/70 border border-slate-800">
-                    <span className="font-mono text-[10px] text-blue-400 font-bold block mb-1">02 • INVITE</span>
-                    <span>Share with peers and have them enter your code upon signup.</span>
-                  </div>
-                  <div className="p-3 rounded-xl bg-slate-950/70 border border-slate-800">
-                    <span className="font-mono text-[10px] text-blue-400 font-bold block mb-1">03 • WIN GIFTS</span>
-                    <span>The shortlisted team with the highest referral count receives the gift.</span>
-                  </div>
-                </div>
-
-                {/* MANDATORY QUALIFICATION REQUIREMENT HIGHLIGHT BOX */}
-                <div className="p-3.5 sm:p-4 rounded-xl bg-amber-950/40 border-2 border-amber-400/90 shadow-[0_0_20px_rgba(245,158,11,0.2)] flex items-start gap-3">
-                  <AlertCircle className="w-5 h-5 text-amber-400 shrink-0 mt-0.5" />
-                  <div className="space-y-1">
-                    <span className="text-xs font-mono font-black uppercase text-amber-300 tracking-wider block">
-                      ELIGIBILITY REQUIREMENT
-                    </span>
-                    <p className="text-xs sm:text-[13px] text-amber-100 font-sans leading-relaxed">
-                      <strong>Teams must have at least 2 valid referred teams</strong> to be qualified for referral rewards. Teams with fewer than 2 referrals will not be eligible.
-                    </p>
-                  </div>
+              {/* MANDATORY QUALIFICATION REQUIREMENT HIGHLIGHT */}
+              <div className="p-3.5 sm:p-4 rounded-2xl bg-amber-50 border-2 border-amber-300 text-amber-950 flex items-start gap-3 shadow-sm">
+                <AlertCircle className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
+                <div className="space-y-0.5">
+                  <span className="text-xs font-mono font-black uppercase text-amber-800 tracking-wide block">
+                    Important Qualification Requirement
+                  </span>
+                  <p className="text-xs sm:text-[13px] font-semibold text-amber-900 leading-snug">
+                    Teams must have at least <strong>2 valid referred teams</strong> to be qualified for referral rewards.
+                  </p>
                 </div>
               </div>
 
-              {/* SECTION 2: EARLY BIRD OFFER (ENDING SOON) */}
-              <div className="p-4 sm:p-5 rounded-2xl bg-gradient-to-br from-amber-950/40 via-yellow-950/20 to-slate-950/80 border-2 border-amber-400 shadow-[0_0_25px_rgba(245,158,11,0.3)] animate-golden-border-blink space-y-3">
-                <div className="flex flex-wrap items-center justify-between gap-2">
+              {/* EARLY BIRD OFFER (ENDING SOON) */}
+              <div className="p-4 rounded-2xl bg-gradient-to-r from-amber-50 via-yellow-50 to-amber-50/70 border-2 border-amber-300 shadow-sm space-y-2">
+                <div className="flex items-center justify-between gap-2 flex-wrap">
                   <div className="flex items-center gap-2">
-                    <Flame className="w-5 h-5 text-amber-400 animate-bounce" />
-                    <h3 className="font-heading text-sm sm:text-base font-black text-amber-200 uppercase tracking-wide">
-                      Early Bird Offer — Ending Soon!
-                    </h3>
+                    <span className="text-amber-600 text-base font-bold">⚡</span>
+                    <span className="font-heading font-black text-slate-950 text-sm sm:text-base uppercase tracking-wide">
+                      Early Bird Registration
+                    </span>
                   </div>
-                  <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-400/20 border border-amber-300/80 text-amber-300 font-mono text-[11px] font-black tracking-wider uppercase">
-                    <Clock className="w-3.5 h-3.5" />
-                    <span>ENDS SEPTEMBER 21</span>
-                  </div>
+                  <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-amber-200/80 border border-amber-300 text-amber-900 font-mono text-[11px] font-bold uppercase">
+                    <Clock className="w-3 h-3 text-amber-800" />
+                    <span>Ends September 21</span>
+                  </span>
                 </div>
 
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-3.5 rounded-xl bg-slate-950/85 border border-amber-500/30">
-                  <div className="space-y-1">
-                    <div className="text-xs font-mono font-bold text-slate-300">
-                      Team Registration Fee:
-                    </div>
-                    <div className="flex items-baseline gap-2.5">
-                      <span className="text-2xl sm:text-3xl font-black font-mono text-amber-400">₹700</span>
-                      <span className="text-sm font-mono text-slate-500 line-through">₹1,000</span>
-                      <span className="text-[11px] font-mono font-bold text-emerald-400 bg-emerald-950/50 px-2 py-0.5 rounded border border-emerald-500/30">
-                        SAVE ₹300
-                      </span>
-                    </div>
-                  </div>
-
-                  <p className="text-xs text-slate-300 font-sans sm:max-w-xs leading-relaxed">
-                    Register before <strong>September 21</strong> to lock in the ₹700 early-bird rate. Fee returns to <strong>₹1,000 per team</strong> on September 22.
-                  </p>
-                </div>
+                <p className="text-xs sm:text-[13px] text-slate-700 leading-relaxed">
+                  Register for <strong className="text-slate-950 text-sm">₹700 per team</strong> instead of <span className="line-through text-slate-500">₹1,000</span> (Save ₹300). Early bird offer ends on <strong>September 21</strong>, after which the fee returns to ₹1,000 per team.
+                </p>
               </div>
 
             </div>
 
             {/* MODAL ACTIONS FOOTER */}
-            <div className="pt-4 border-t border-slate-800/80 flex flex-col sm:flex-row items-center justify-between gap-3 shrink-0 relative z-10">
+            <div className="pt-4 border-t border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-3 shrink-0">
               <button
                 type="button"
                 onClick={onClose}
-                className="w-full sm:w-auto px-6 py-3 rounded-full bg-slate-900/90 hover:bg-slate-800 border border-slate-700 text-slate-300 hover:text-white font-mono text-xs font-bold uppercase tracking-wider transition-all cursor-pointer"
+                className="w-full sm:w-auto px-6 py-3 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-700 font-mono text-xs font-bold uppercase tracking-wider transition-colors cursor-pointer"
               >
-                GOT IT — EXPLORE SITE
+                GOT IT
               </button>
 
               <button
@@ -195,10 +162,10 @@ export function ReferralAnnouncementModal({
                   onClose();
                   onRegister();
                 }}
-                className="w-full sm:w-auto px-8 py-3.5 rounded-full bg-gradient-to-r from-amber-500 via-amber-600 to-yellow-600 hover:from-amber-400 hover:to-yellow-500 text-slate-950 font-mono text-xs font-black uppercase tracking-widest transition-all flex items-center justify-center gap-2 cursor-pointer shadow-[0_0_25px_rgba(245,158,11,0.5)] hover:scale-105 active:scale-95"
+                className="w-full sm:w-auto px-8 py-3.5 rounded-full bg-blue-600 hover:bg-blue-500 text-white font-mono text-xs font-black uppercase tracking-widest transition-all flex items-center justify-center gap-2 cursor-pointer shadow-md hover:scale-105 active:scale-95"
               >
                 <span>REGISTER NOW (₹700)</span>
-                <ArrowRight className="w-4 h-4 text-slate-950 stroke-[3]" />
+                <ArrowRight className="w-4 h-4 text-white stroke-[3]" />
               </button>
             </div>
           </motion.div>
