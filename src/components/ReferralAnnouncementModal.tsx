@@ -82,6 +82,14 @@ export function ReferralAnnouncementModal({
 
   if (!mounted) return null;
 
+  if (typeof window !== "undefined") {
+    const path = window.location.pathname.toLowerCase();
+    const search = window.location.search.toLowerCase();
+    if (path.includes("pay") || search.includes("teamid") || search.includes("payid")) {
+      return null;
+    }
+  }
+
   return createPortal(
     <AnimatePresence>
       {isOpen && (
