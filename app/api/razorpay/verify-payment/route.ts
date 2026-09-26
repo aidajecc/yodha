@@ -50,10 +50,10 @@ export async function POST(request: NextRequest) {
     }
 
     // --- 2. Verify HMAC-SHA256 signature ---
-    const keySecret = process.env.RAZORPAY_KEY_SECRET;
+    const keySecret = (process.env.RAZORPAY_KEY_SECRET || "").trim();
     if (!keySecret) {
       return NextResponse.json(
-        { success: false, error: "Server configuration error: missing Razorpay secret." },
+        { success: false, error: "Server configuration error: missing Razorpay secret. Please restart your dev server." },
         { status: 500 }
       );
     }

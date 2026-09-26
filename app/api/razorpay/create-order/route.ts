@@ -2,11 +2,11 @@ import { NextRequest, NextResponse } from "next/server";
 import Razorpay from "razorpay";
 
 const getRazorpayInstance = () => {
-  const keyId = process.env.RAZORPAY_KEY_ID;
-  const keySecret = process.env.RAZORPAY_KEY_SECRET;
+  const keyId = (process.env.RAZORPAY_KEY_ID || process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || "").trim();
+  const keySecret = (process.env.RAZORPAY_KEY_SECRET || "").trim();
 
   if (!keyId || !keySecret) {
-    throw new Error("Razorpay credentials are not configured.");
+    throw new Error("Razorpay credentials are not configured. Please restart your dev server (Ctrl+C and npm run dev).");
   }
 
   return new Razorpay({ key_id: keyId, key_secret: keySecret });
@@ -57,7 +57,7 @@ export async function POST(request: NextRequest) {
       orderId: order.id,
       amount: order.amount,
       currency: order.currency,
-      keyId: process.env.RAZORPAY_KEY_ID,
+      keyId: (process.env.RAZORPAY_KEY_ID || process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || "").trim(),
     });
   } catch (err: any) {
     console.error("❌ [Razorpay create-order Error]:", err?.message || err);
