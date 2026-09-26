@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   CreditCard,
@@ -40,6 +40,20 @@ export function PaymentPortalPage({ onBack, initialTeamId = "" }: PaymentPortalP
   const [isPaymentModalOpen, setIsPaymentModalOpen] = useState<boolean>(false);
   const [isProcessingPayment, setIsProcessingPayment] = useState<boolean>(false);
   const [paymentSuccess, setPaymentSuccess] = useState<boolean>(false);
+  const [paymentError, setPaymentError] = useState<string | null>(null);
+  const [razorpayLoaded, setRazorpayLoaded] = useState<boolean>(false);
+
+  // Dynamically load the Razorpay checkout script
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    if ((window as any).Razorpay) { setRazorpayLoaded(true); return; }
+    const script = document.createElement("script");
+    script.src = "https://checkout.razorpay.com/v1/checkout.js";
+    script.async = true;
+    script.onload = () => setRazorpayLoaded(true);
+    script.onerror = () => console.warn("Failed to load Razorpay checkout script.");
+    document.body.appendChild(script);
+  }, []);
 
   // Sync initial search parameter
   useEffect(() => {
@@ -90,21 +104,108 @@ export function PaymentPortalPage({ onBack, initialTeamId = "" }: PaymentPortalP
     setTimeout(() => setIsCopied(false), 2500);
   };
 
-  const handleSimulatePayment = async () => {
+  const handleRazorpayPayment = useCallback(async () => {
+    if (!teamData || !razorpayLoaded) return;
+
+    setPaymentError(null);
     setIsProcessingPayment(true);
-    setTimeout(async () => {
-      if (teamData) {
-        await updateSelectedTeamPayment(teamData.id || teamData.uniqueTeamId, "Completed");
-        setTeamData({
-          ...teamData,
-          paymentStatus: "Completed",
-          paymentTxnId: `TXN-${Math.random().toString(36).substring(2, 9).toUpperCase()}`,
-        });
+
+    try {
+      // Step 1: Create order on server
+      const orderRes = await fetch("/api/razorpay/create-order", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          amount: teamData.amountToPay,
+          teamId: teamData.uniqueTeamId,
+          teamName: teamData.teamName,
+        }),
+      });
+
+      const orderData = await orderRes.json();
+      if (!orderRes.ok || !orderData.success) {
+        throw new Error(orderData.error || "Failed to create payment order.");
       }
+
+      const { orderId, amount, currency, keyId } = orderData;
+
+      // Step 2: Open Razorpay checkout
+      const options = {
+        key: keyId,
+        amount,
+        currency,
+        name: "YODHA 2.0",
+        description: `Registration Fee – ${teamData.teamName}`,
+        image: "/logo.webp",
+        order_id: orderId,
+        prefill: {
+          name: teamData.leaderName,
+          email: teamData.leaderEmail,
+          contact: teamData.leaderPhone,
+        },
+        notes: {
+          teamId: teamData.uniqueTeamId,
+          teamName: teamData.teamName,
+        },
+        theme: { color: "#2563eb" },
+        handler: async (response: {
+          razorpay_payment_id: string;
+          razorpay_order_id: string;
+          razorpay_signature: string;
+        }) => {
+          // Step 3: Verify payment signature on server
+          try {
+            const verifyRes = await fetch("/api/razorpay/verify-payment", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                razorpay_payment_id: response.razorpay_payment_id,
+                razorpay_order_id: response.razorpay_order_id,
+                razorpay_signature: response.razorpay_signature,
+                teamDocId: teamData.id || teamData.uniqueTeamId,
+                teamId: teamData.uniqueTeamId,
+              }),
+            });
+
+            const verifyData = await verifyRes.json();
+            if (verifyData.success) {
+              // Update local UI state
+              setTeamData({
+                ...teamData,
+                paymentStatus: "Completed",
+                paymentTxnId: response.razorpay_payment_id,
+              });
+              setPaymentSuccess(true);
+              setIsPaymentModalOpen(false);
+            } else {
+              throw new Error(verifyData.error || "Payment verification failed.");
+            }
+          } catch (verifyErr: any) {
+            setPaymentError(
+              verifyErr?.message || "Payment was received but verification failed. Contact support with your payment ID: " + response.razorpay_payment_id
+            );
+          } finally {
+            setIsProcessingPayment(false);
+          }
+        },
+        modal: {
+          ondismiss: () => {
+            setIsProcessingPayment(false);
+          },
+        },
+      };
+
+      const rzp = new (window as any).Razorpay(options);
+      rzp.on("payment.failed", (resp: any) => {
+        setPaymentError(`Payment failed: ${resp?.error?.description || "Unknown error. Please try again."}`);
+        setIsProcessingPayment(false);
+      });
+      rzp.open();
+    } catch (err: any) {
+      setPaymentError(err?.message || "Something went wrong. Please try again.");
       setIsProcessingPayment(false);
-      setPaymentSuccess(true);
-    }, 1500);
-  };
+    }
+  }, [teamData, razorpayLoaded]);
 
   return (
     <div className="w-full min-h-screen bg-[#03060d] text-white font-sans relative overflow-x-hidden flex flex-col justify-between select-none">
@@ -417,34 +518,44 @@ export function PaymentPortalPage({ onBack, initialTeamId = "" }: PaymentPortalP
                 <div className="p-4 rounded-2xl bg-slate-900/90 border border-slate-800 text-xs font-mono text-slate-300 text-left space-y-2">
                   <div className="flex items-center gap-2 text-cyan-400 font-bold">
                     <ShieldCheck className="w-4 h-4" />
-                    <span>GATEWAY INTEGRATION NOTICE</span>
+                    <span>SECURED BY RAZORPAY</span>
                   </div>
                   <p className="text-[11px] text-slate-400 leading-relaxed">
-                    Payment Gateway (Razorpay/UPI/Bank Gateway) is ready to be linked. Click below to simulate/complete team registration payment.
+                    Your payment is secured with 256-bit SSL encryption via Razorpay. Supports UPI, Cards, Net Banking, and Wallets.
                   </p>
+                  {paymentError && (
+                    <p className="text-[11px] text-rose-400 font-bold leading-relaxed border-t border-rose-500/30 pt-2">
+                      ⚠️ {paymentError}
+                    </p>
+                  )}
                 </div>
               </div>
 
               <div className="space-y-3 pt-2">
                 <button
-                  onClick={handleSimulatePayment}
-                  disabled={isProcessingPayment || paymentSuccess}
+                  onClick={handleRazorpayPayment}
+                  disabled={isProcessingPayment || paymentSuccess || !razorpayLoaded}
                   className="w-full py-4 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-mono text-xs font-black tracking-widest uppercase cursor-pointer shadow-lg active:scale-95 transition-all flex items-center justify-center gap-2 disabled:opacity-50"
                 >
                   {isProcessingPayment ? (
                     <>
                       <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                      <span>PROCESSING PAYMENT...</span>
+                      <span>OPENING RAZORPAY...</span>
                     </>
                   ) : paymentSuccess ? (
                     <>
                       <CheckCircle2 className="w-4 h-4 text-white" />
                       <span>PAYMENT SUCCESSFUL!</span>
                     </>
+                  ) : !razorpayLoaded ? (
+                    <>
+                      <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                      <span>LOADING GATEWAY...</span>
+                    </>
                   ) : (
                     <>
                       <Lock className="w-4 h-4" />
-                      <span>COMPLETE PAYMENT NOW</span>
+                      <span>PAY ₹{teamData?.amountToPay} VIA RAZORPAY</span>
                     </>
                   )}
                 </button>
