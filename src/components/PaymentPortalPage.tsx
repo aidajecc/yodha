@@ -37,9 +37,10 @@ export function PaymentPortalPage({ onBack, initialTeamId = "" }: PaymentPortalP
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
   const [isCopied, setIsCopied] = useState<boolean>(false);
-  const [isPaymentModalOpen, setIsPaymentModalOpen] = useState<boolean>(false);
+  const [isTxnCopied, setIsTxnCopied] = useState<boolean>(false);
   const [isProcessingPayment, setIsProcessingPayment] = useState<boolean>(false);
   const [paymentSuccess, setPaymentSuccess] = useState<boolean>(false);
+  const [showSuccessModal, setShowSuccessModal] = useState<boolean>(false);
   const [paymentError, setPaymentError] = useState<string | null>(null);
   const [razorpayLoaded, setRazorpayLoaded] = useState<boolean>(false);
 
@@ -193,7 +194,7 @@ export function PaymentPortalPage({ onBack, initialTeamId = "" }: PaymentPortalP
                 paymentTxnId: response.razorpay_payment_id,
               });
               setPaymentSuccess(true);
-              setIsPaymentModalOpen(false);
+              setShowSuccessModal(true);
             } else {
               throw new Error(verifyData.error || "Payment verification failed.");
             }
@@ -476,114 +477,159 @@ export function PaymentPortalPage({ onBack, initialTeamId = "" }: PaymentPortalP
                   </a>
                 </div>
 
-                {teamData.paymentStatus === "Completed" ? (
-                  <span className="px-8 py-4 rounded-full bg-emerald-500/10 border border-emerald-500/40 text-emerald-300 font-mono text-xs font-black uppercase tracking-widest flex items-center gap-2.5 shadow-[0_0_30px_rgba(16,185,129,0.2)]">
-                    <CheckCircle2 className="w-5 h-5 text-emerald-400" />
-                    SLOT CONFIRMED
-                  </span>
-                ) : (
-                  <button
-                    onClick={() => setIsPaymentModalOpen(true)}
-                    className="w-full sm:w-auto px-10 py-4.5 rounded-2xl bg-blue-600 hover:bg-blue-500 text-white font-mono text-sm font-black tracking-widest uppercase cursor-pointer shadow-[0_0_35px_rgba(59,130,246,0.6)] hover:shadow-[0_0_55px_rgba(59,130,246,0.8)] transition-all duration-300 flex items-center justify-center gap-3 active:scale-95 hover:scale-[1.02]"
-                  >
-                    <CreditCard className="w-5 h-5 text-white" />
-                    <span>PROCEED TO PAYMENT (₹{teamData.amountToPay})</span>
-                  </button>
-                )}
+                <div className="flex flex-col sm:flex-row items-center gap-4 w-full sm:w-auto">
+                  {paymentError && (
+                    <div className="w-full sm:w-auto px-4 py-2.5 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-300 text-xs font-sans flex items-center gap-2">
+                      <AlertCircle className="w-4 h-4 text-rose-400 shrink-0" />
+                      <span>{paymentError}</span>
+                    </div>
+                  )}
+
+                  {teamData.paymentStatus === "Completed" ? (
+                    <div className="flex items-center gap-3">
+                      <span className="px-6 py-3.5 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 font-sans font-bold text-xs uppercase tracking-wider flex items-center gap-2 shadow-sm">
+                        <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+                        SLOT CONFIRMED
+                      </span>
+                    </div>
+                  ) : (
+                    <div className="flex flex-col sm:flex-row items-center gap-3 w-full sm:w-auto">
+                      <div className="text-right hidden sm:block">
+                        <span className="text-[11px] text-slate-400 block font-sans">256-bit SSL encrypted</span>
+                        <span className="text-[10px] text-slate-500 block font-sans">UPI • Cards • Net Banking via Razorpay</span>
+                      </div>
+
+                      <button
+                        onClick={handleRazorpayPayment}
+                        disabled={isProcessingPayment || !razorpayLoaded}
+                        className="w-full sm:w-auto px-8 py-3.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-sans text-xs sm:text-sm font-bold tracking-wide transition-all shadow-md active:scale-95 disabled:opacity-50 cursor-pointer flex items-center justify-center gap-2.5"
+                      >
+                        {isProcessingPayment ? (
+                          <>
+                            <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                            <span>Opening Razorpay...</span>
+                          </>
+                        ) : !razorpayLoaded ? (
+                          <>
+                            <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                            <span>Loading Gateway...</span>
+                          </>
+                        ) : (
+                          <>
+                            <Lock className="w-4 h-4" />
+                            <span>Pay ₹{teamData.amountToPay} via Razorpay</span>
+                          </>
+                        )}
+                      </button>
+                    </div>
+                  )}
+                </div>
               </div>
             </motion.div>
           )}
         </motion.div>
       </main>
 
-      {/* PAYMENT MODAL (GATEWAY INTEGRATION DIALOG) */}
+      {/* MINIMAL & SMOOTH PAYMENT CONFIRMATION MODAL */}
       <AnimatePresence>
-        {isPaymentModalOpen && teamData && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/85 backdrop-blur-md">
+        {showSuccessModal && teamData && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md">
             <motion.div
-              initial={{ scale: 0.9, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.9, opacity: 0 }}
-              className="w-full max-w-lg p-6 sm:p-8 rounded-3xl bg-[#081125] border-2 border-blue-500/50 shadow-[0_0_60px_rgba(59,130,246,0.4)] text-white space-y-6 relative overflow-hidden"
+              initial={{ scale: 0.92, opacity: 0, y: 12 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.95, opacity: 0, y: 10 }}
+              transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
+              className="w-full max-w-md p-6 sm:p-8 rounded-3xl bg-slate-900 border border-slate-800 shadow-2xl text-white text-center space-y-6 relative overflow-hidden"
             >
-              <div className="flex items-center justify-between pb-4 border-b border-slate-800">
-                <div className="flex items-center gap-2">
-                  <CreditCard className="w-5 h-5 text-cyan-400" />
-                  <h3 className="text-lg font-black font-heading tracking-tight">SECURE PAYMENT GATEWAY</h3>
-                </div>
-                <button
-                  onClick={() => setIsPaymentModalOpen(false)}
-                  className="text-slate-400 hover:text-white text-xs font-mono cursor-pointer"
+              {/* SMOOTH ANIMATED CHECKMARK */}
+              <div className="pt-2">
+                <motion.div
+                  initial={{ scale: 0.8, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  transition={{ duration: 0.4, ease: "easeOut" }}
+                  className="w-20 h-20 rounded-full bg-emerald-500/10 border border-emerald-500/25 flex items-center justify-center mx-auto"
                 >
-                  [ CLOSE ]
-                </button>
+                  <svg className="w-10 h-10" viewBox="0 0 52 52" fill="none">
+                    <motion.circle
+                      cx="26"
+                      cy="26"
+                      r="23"
+                      stroke="#10b981"
+                      strokeWidth="3"
+                      strokeLinecap="round"
+                      initial={{ pathLength: 0 }}
+                      animate={{ pathLength: 1 }}
+                      transition={{ duration: 0.5, ease: "easeInOut" }}
+                    />
+                    <motion.path
+                      d="M15 27L22 34L37 19"
+                      stroke="#10b981"
+                      strokeWidth="3.5"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      initial={{ pathLength: 0 }}
+                      animate={{ pathLength: 1 }}
+                      transition={{ duration: 0.35, delay: 0.35, ease: "easeOut" }}
+                    />
+                  </svg>
+                </motion.div>
               </div>
 
-              <div className="space-y-4 text-center">
-                <div className="w-16 h-16 rounded-full bg-blue-500/10 border border-blue-500/30 flex items-center justify-center mx-auto text-blue-400">
-                  <ShieldCheck className="w-8 h-8 text-cyan-400 animate-pulse" />
-                </div>
+              {/* HEADING & SUBTITLE */}
+              <div className="space-y-1.5">
+                <span className="px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 font-mono text-[10px] font-bold tracking-widest uppercase inline-block">
+                  Payment Verified
+                </span>
+                <h3 className="text-2xl font-bold font-heading text-white">
+                  Slot Confirmed!
+                </h3>
+                <p className="text-xs text-slate-300 font-sans max-w-xs mx-auto leading-relaxed">
+                  Your registration fee for <strong className="text-white font-bold">{teamData.teamName}</strong> has been received and verified.
+                </p>
+              </div>
 
-                <div className="space-y-1 font-mono">
-                  <h4 className="text-xl font-black text-white font-heading">{teamData.teamName}</h4>
-                  <p className="text-xs text-slate-400">Unique Team ID: {teamData.uniqueTeamId}</p>
-                  <p className="text-2xl font-black text-amber-300 font-serif pt-2">
-                    Amount: ₹{teamData.amountToPay}
-                  </p>
+              {/* CLEAN MINIMAL RECEIPT DETAILS */}
+              <div className="p-4 rounded-2xl bg-slate-950/60 border border-slate-800/80 text-xs font-sans text-left space-y-2.5">
+                <div className="flex items-center justify-between">
+                  <span className="text-slate-400 text-[11px]">Team ID</span>
+                  <span className="font-mono font-bold text-slate-200">{teamData.uniqueTeamId}</span>
                 </div>
-
-                <div className="p-4 rounded-2xl bg-slate-900/90 border border-slate-800 text-xs font-mono text-slate-300 text-left space-y-2">
-                  <div className="flex items-center gap-2 text-cyan-400 font-bold">
-                    <ShieldCheck className="w-4 h-4" />
-                    <span>SECURED BY RAZORPAY</span>
+                <div className="flex items-center justify-between">
+                  <span className="text-slate-400 text-[11px]">Amount Paid</span>
+                  <span className="font-bold text-emerald-400 font-mono">₹{teamData.amountToPay}</span>
+                </div>
+                {teamData.paymentTxnId && (
+                  <div className="flex items-center justify-between pt-1 border-t border-slate-800/60">
+                    <span className="text-slate-400 text-[11px]">Payment ID</span>
+                    <div className="flex items-center gap-1.5 font-mono text-[11px] text-slate-300">
+                      <span>{teamData.paymentTxnId}</span>
+                      <button
+                        onClick={() => {
+                          navigator.clipboard.writeText(teamData.paymentTxnId || "");
+                          setIsTxnCopied(true);
+                          setTimeout(() => setIsTxnCopied(false), 2000);
+                        }}
+                        className="p-0.5 text-slate-400 hover:text-white transition-colors cursor-pointer"
+                        title="Copy Payment ID"
+                      >
+                        {isTxnCopied ? (
+                          <Check className="w-3 h-3 text-emerald-400" />
+                        ) : (
+                          <Copy className="w-3 h-3" />
+                        )}
+                      </button>
+                    </div>
                   </div>
-                  <p className="text-[11px] text-slate-400 leading-relaxed">
-                    Your payment is secured with 256-bit SSL encryption via Razorpay. Supports UPI, Cards, Net Banking, and Wallets.
-                  </p>
-                  {paymentError && (
-                    <p className="text-[11px] text-rose-400 font-bold leading-relaxed border-t border-rose-500/30 pt-2">
-                      ⚠️ {paymentError}
-                    </p>
-                  )}
-                </div>
+                )}
               </div>
 
-              <div className="space-y-3 pt-2">
-                <button
-                  onClick={handleRazorpayPayment}
-                  disabled={isProcessingPayment || paymentSuccess || !razorpayLoaded}
-                  className="w-full py-4 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-mono text-xs font-black tracking-widest uppercase cursor-pointer shadow-lg active:scale-95 transition-all flex items-center justify-center gap-2 disabled:opacity-50"
-                >
-                  {isProcessingPayment ? (
-                    <>
-                      <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                      <span>OPENING RAZORPAY...</span>
-                    </>
-                  ) : paymentSuccess ? (
-                    <>
-                      <CheckCircle2 className="w-4 h-4 text-white" />
-                      <span>PAYMENT SUCCESSFUL!</span>
-                    </>
-                  ) : !razorpayLoaded ? (
-                    <>
-                      <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                      <span>LOADING GATEWAY...</span>
-                    </>
-                  ) : (
-                    <>
-                      <Lock className="w-4 h-4" />
-                      <span>PAY ₹{teamData?.amountToPay} VIA RAZORPAY</span>
-                    </>
-                  )}
-                </button>
-
-                <button
-                  onClick={() => setIsPaymentModalOpen(false)}
-                  className="w-full py-2.5 rounded-xl bg-slate-900 border border-slate-800 hover:bg-slate-800 text-slate-400 text-xs font-mono cursor-pointer"
-                >
-                  Cancel
-                </button>
-              </div>
+              {/* ACTION BUTTON */}
+              <button
+                onClick={() => setShowSuccessModal(false)}
+                className="w-full py-3.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-sans text-xs font-bold uppercase tracking-wider transition-all shadow-md active:scale-95 cursor-pointer"
+              >
+                Done
+              </button>
             </motion.div>
           </div>
         )}

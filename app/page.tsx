@@ -157,15 +157,17 @@ export default function Home() {
   }, []);
 
   // Automatically open announcement popup 2 seconds after the site is loaded completely
+  // (only on main site, never when the user is in the payment portal)
   useEffect(() => {
-    if (isLoading) return;
+    if (isLoading || activePage === "payment") return;
 
     const timer = setTimeout(() => {
+      if (window.location.pathname.includes("pay") || window.location.search.includes("teamId")) return;
       setIsAnnouncementOpen(true);
     }, 2000);
 
     return () => clearTimeout(timer);
-  }, [isLoading]);
+  }, [isLoading, activePage]);
 
   return (
     <>
@@ -273,15 +275,17 @@ export default function Home() {
         referralCode={referralDashboardCode}
       />
 
-      {/* AUTO-POPUP REFERRAL & EARLY BIRD ANNOUNCEMENT (HIGHEST Z-INDEX) */}
-      <ReferralAnnouncementModal
-        isOpen={isAnnouncementOpen}
-        onClose={() => setIsAnnouncementOpen(false)}
-        onRegister={() => {
-          setIsAnnouncementOpen(false);
-          handleOpenRegisterWithTrack();
-        }}
-      />
+      {/* AUTO-POPUP REFERRAL & EARLY BIRD ANNOUNCEMENT (HIGHEST Z-INDEX, SUPPRESSED ON PAYMENT PAGE) */}
+      {activePage !== "payment" && (
+        <ReferralAnnouncementModal
+          isOpen={isAnnouncementOpen}
+          onClose={() => setIsAnnouncementOpen(false)}
+          onRegister={() => {
+            setIsAnnouncementOpen(false);
+            handleOpenRegisterWithTrack();
+          }}
+        />
+      )}
     </div>
 
     {/* FLOATING REFERRAL GIFT */}
