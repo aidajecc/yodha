@@ -72,6 +72,7 @@ export async function POST(request: NextRequest) {
     }
 
     // --- 3. Update Firebase Firestore (server-side via Admin SDK) ---
+    let dbUpdated = false;
     try {
       const db = getAdminDb();
       const docId = teamDocId || teamId;
@@ -87,16 +88,18 @@ export async function POST(request: NextRequest) {
         },
         { merge: true }
       );
+      dbUpdated = true;
     } catch (dbErr: any) {
-      console.error("⚠️ Firebase Admin update failed:", dbErr?.message);
-      // Don't fail the whole response — payment WAS verified.
-      // Log the error and continue so the user gets a success response.
+      console.warn("⚠️ Firebase Admin update failed:", dbErr?.message);
+      // Don't fail the whole response — payment signature WAS cryptographically verified.
+      // The client portal will run a client-side updateSelectedTeamPayment fallback if dbUpdated is false.
     }
 
     return NextResponse.json({
       success: true,
       paymentId: razorpay_payment_id,
       orderId: razorpay_order_id,
+      dbUpdated,
       message: "Payment verified and team slot confirmed.",
     });
   } catch (err: any) {

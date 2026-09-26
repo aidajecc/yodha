@@ -24,8 +24,10 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Sanitize amount (handle numbers or strings like "700", "₹700", etc.)
+    const cleanAmount = typeof amount === "number" ? amount : Number(String(amount).replace(/[^0-9.]/g, ""));
     // Razorpay amount is in paise (1 INR = 100 paise)
-    const amountInPaise = Math.round(Number(amount) * 100);
+    const amountInPaise = Math.round(cleanAmount * 100);
     if (isNaN(amountInPaise) || amountInPaise <= 0) {
       return NextResponse.json(
         { success: false, error: "Invalid amount value." },
@@ -35,13 +37,17 @@ export async function POST(request: NextRequest) {
 
     const razorpay = getRazorpayInstance();
 
+    // Receipt max length in Razorpay is 40 characters
+    const cleanTeamId = String(teamId).replace(/[^a-zA-Z0-9]/g, "").slice(-16);
+    const safeReceipt = `rcpt_${cleanTeamId}_${Date.now().toString().slice(-10)}`.slice(0, 40);
+
     const order = await razorpay.orders.create({
       amount: amountInPaise,
       currency,
-      receipt: `rcpt_${teamId}_${Date.now()}`,
+      receipt: safeReceipt,
       notes: {
-        teamId,
-        teamName,
+        teamId: String(teamId).slice(0, 40),
+        teamName: String(teamName).slice(0, 100),
         source: "YODHA 2.0 Payment Portal",
       },
     });

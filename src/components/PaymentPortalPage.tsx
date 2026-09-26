@@ -51,7 +51,10 @@ export function PaymentPortalPage({ onBack, initialTeamId = "" }: PaymentPortalP
     script.src = "https://checkout.razorpay.com/v1/checkout.js";
     script.async = true;
     script.onload = () => setRazorpayLoaded(true);
-    script.onerror = () => console.warn("Failed to load Razorpay checkout script.");
+    script.onerror = () => {
+      console.warn("Failed to load Razorpay checkout script.");
+      setPaymentError("Payment gateway could not be loaded. Please disable ad-blockers or try refreshing the page.");
+    };
     document.body.appendChild(script);
   }, []);
 
@@ -169,6 +172,20 @@ export function PaymentPortalPage({ onBack, initialTeamId = "" }: PaymentPortalP
 
             const verifyData = await verifyRes.json();
             if (verifyData.success) {
+              // If server-side Firebase Admin SDK didn't have credentials configured,
+              // write to Firestore using client SDK fallback so payment status is guaranteed saved
+              if (!verifyData.dbUpdated) {
+                try {
+                  await updateSelectedTeamPayment(
+                    teamData.id || teamData.uniqueTeamId,
+                    "Completed",
+                    response.razorpay_payment_id
+                  );
+                } catch (clientWriteErr) {
+                  console.warn("Client fallback payment update:", clientWriteErr);
+                }
+              }
+
               // Update local UI state
               setTeamData({
                 ...teamData,
