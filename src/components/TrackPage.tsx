@@ -1,7 +1,7 @@
 "use client";
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowLeft, Search, ArrowRight, ChevronUp, CheckCircle2 } from "lucide-react";
+import { ArrowLeft, Search, ArrowRight, ChevronUp, CheckCircle2, Lock } from "lucide-react";
 import { YodhaImage } from "./YodhaImage";
 import {
   HEALTHCARE_PROBLEM_STATEMENTS,
@@ -262,15 +262,12 @@ export function TrackPage({ onBack, onOpenRegisterWithTrack }: TrackPageProps) {
                             </ul>
                           </div>
 
-                          {/* REGISTER NOW -> Button Only */}
+                          {/* REGISTRATION CLOSED Status */}
                           <div className="pt-4">
-                            <button
-                              onClick={() => onOpenRegisterWithTrack("Healthcare AI")}
-                              className="w-full sm:w-auto px-8 py-3.5 rounded-full bg-gradient-to-r from-blue-600 via-blue-500 to-sky-600 text-white font-mono text-xs font-bold uppercase tracking-widest flex items-center justify-center gap-2 cursor-pointer hover:scale-105 transition-all shadow-xl active:scale-95 group/btn select-none"
-                            >
-                              <span>REGISTER NOW</span>
-                              <ArrowRight className="w-4 h-4 text-white group-hover/btn:translate-x-1 transition-transform" />
-                            </button>
+                            <div className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-red-500/10 border border-red-500/30 text-red-400 font-mono text-xs font-bold uppercase tracking-widest shadow-md select-none">
+                              <Lock className="w-4 h-4 text-red-400" />
+                              <span>REGISTRATION CLOSED</span>
+                            </div>
                           </div>
                         </div>
                       </div>

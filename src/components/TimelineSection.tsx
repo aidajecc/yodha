@@ -95,10 +95,10 @@ export function TimelineSection({ onOpenRegister }: TimelineSectionProps) {
           >
             <div className={`inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-mono font-bold shadow-sm transition-all duration-300 ${
               isPhase1Selected
-                ? "bg-amber-100 border border-amber-300 text-amber-900 shadow-[0_0_15px_rgba(245,158,11,0.25)]"
+                ? "bg-red-100 border border-red-300 text-red-900 shadow-[0_0_15px_rgba(239,68,68,0.2)]"
                 : "bg-blue-100 border border-blue-300 text-blue-800"
             }`}>
-              <span className="font-extrabold">{selectedPhase.phaseId}</span> • <span>{isPhase1Selected ? "Early Bird Offer Active" : "Auto-playing phases"}</span>
+              <span className="font-extrabold">{selectedPhase.phaseId}</span> • <span>{isPhase1Selected ? "Registration Closed" : "Auto-playing phases"}</span>
             </div>
           </motion.div>
         </div>
@@ -416,17 +416,12 @@ export function TimelineSection({ onOpenRegister }: TimelineSectionProps) {
 
         </div>
 
-        {/* Register Button Below the Journey */}
-        <div className="mt-16 flex justify-center pb-12 relative z-20">
-          <motion.button
-            type="button"
-            onClick={onOpenRegister}
-            animate={{ scale: [1, 1.05, 1] }}
-            transition={{ repeat: Infinity, duration: 1.5, ease: "easeInOut" }}
-            className="px-12 py-4 rounded-full bg-blue-600 hover:bg-blue-500 text-white font-mono text-base font-black tracking-widest uppercase cursor-pointer"
-          >
-            REGISTER NOW
-          </motion.button>
+        {/* Registration Closed Notice Below the Journey */}
+        <div className="mt-12 sm:mt-16 flex justify-center pb-10 relative z-20">
+          <div className="inline-flex items-center gap-2.5 px-8 py-3.5 rounded-full bg-slate-900 border border-slate-700 text-white font-mono text-xs sm:text-sm font-bold tracking-widest uppercase shadow-lg select-none">
+            <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
+            <span>REGISTRATION CLOSED</span>
+          </div>
         </div>
 
       </div>

@@ -39,13 +39,10 @@ export function ClosingCTA({ onOpenRegister }: ClosingCTAProps) {
             Together, let's build AI solutions that save lives & protect our planet. Innovate. Impact. Be a Warrior of AI.
           </p>
 
-          <button
-            onClick={() => onOpenRegister()}
-            className="mt-8 px-10 py-4 rounded-full bg-gradient-to-r from-blue-600 via-blue-500 to-sky-600 text-white font-mono font-bold text-sm tracking-widest uppercase flex items-center justify-center gap-3 shadow-[0_0_30px_rgba(59,130,246,0.6)] hover:brightness-115 hover:scale-105 transition-all cursor-pointer relative z-30 pointer-events-auto"
-          >
-            <span>REGISTER TODAY</span>
-            <ArrowRight className="w-5 h-5 text-white" />
-          </button>
+          <div className="mt-8 px-10 py-4 rounded-full bg-red-950/40 border border-red-500/40 text-red-400 font-mono font-bold text-sm tracking-widest uppercase flex items-center justify-center gap-3 shadow-[0_0_25px_rgba(239,68,68,0.2)] select-none">
+            <span className="w-2.5 h-2.5 rounded-full bg-red-500 animate-ping" />
+            <span>REGISTRATION CLOSED</span>
+          </div>
 
           <span className="text-xs font-mono text-slate-400 mt-6 relative z-20">
             <a href="https://www.jecc.ac.in/" target="_blank" rel="noopener noreferrer" className="hover:text-blue-400 underline">Jyothi Engineering College (Autonomous)</a>, Cheruthuruthy • <a href="mailto:yodha@jecc.ac.in" className="text-blue-400 underline hover:text-blue-300">yodha@jecc.ac.in</a> • <a href="https://aidajecc.in/" target="_blank" rel="noopener noreferrer" className="text-white underline font-bold">aidajecc.in</a>

@@ -100,15 +100,12 @@ export function Navbar({ onOpenRegister }: NavbarProps) {
             ))}
           </nav>
 
-          {/* DESKTOP REGISTER BUTTON */}
+          {/* DESKTOP REGISTRATION CLOSED BADGE */}
           <div className="flex items-center gap-4">
-            <button
-              onClick={() => onOpenRegister()}
-              className="px-6 py-2 rounded-full bg-gradient-to-r from-blue-600 to-blue-500 text-white text-xs font-mono font-bold tracking-widest uppercase flex items-center gap-2 shadow-[0_0_20px_rgba(59,130,246,0.5)] hover:scale-105 transition-all cursor-pointer"
-            >
-              <span>REGISTER</span>
-              <ArrowRight className="w-3.5 h-3.5 text-white" />
-            </button>
+            <div className="px-4 py-1.5 rounded-full bg-red-500/10 border border-red-500/30 text-red-400 text-xs font-mono font-bold tracking-wider uppercase flex items-center gap-2 shadow-[0_0_15px_rgba(239,68,68,0.15)] select-none">
+              <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
+              <span>REGISTRATION CLOSED</span>
+            </div>
           </div>
         </div>
       </div>
@@ -222,17 +219,10 @@ export function Navbar({ onOpenRegister }: NavbarProps) {
                 </div>
 
                 <div className="pt-2">
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setMenuOpen(false);
-                      onOpenRegister();
-                    }}
-                    className="w-full py-3.5 px-6 rounded-full bg-gradient-to-r from-blue-600 via-blue-500 to-sky-600 text-white font-serif text-xs tracking-[0.2em] font-medium uppercase flex items-center justify-center gap-2 shadow-[0_0_25px_rgba(59,130,246,0.4)] hover:brightness-110 hover:scale-[1.02] active:scale-95 transition-all cursor-pointer"
-                  >
-                    <span>REGISTER NOW</span>
-                    <ArrowRight className="w-4 h-4 text-white" />
-                  </button>
+                  <div className="w-full py-3.5 px-6 rounded-full bg-red-950/40 border border-red-500/40 text-red-400 font-mono text-xs tracking-[0.15em] font-bold uppercase flex items-center justify-center gap-2 shadow-[0_0_20px_rgba(239,68,68,0.2)] select-none">
+                    <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
+                    <span>REGISTRATION CLOSED</span>
+                  </div>
                 </div>
 
                 <div className="pt-1 text-center">

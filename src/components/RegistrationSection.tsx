@@ -353,7 +353,7 @@ export function RegistrationSection({ selectedTrack = "Healthcare AI", onOpenRef
         {/* CENTERED BIG HEADER BRANDING (NO ICON) */}
         <div className="flex flex-col items-center justify-center text-center border-b border-blue-500/20 pb-6 mb-8">
           <h2 className="text-3xl sm:text-5xl lg:text-6xl font-black font-heading text-white tracking-tight uppercase">
-            TEAM <span className="text-blue-400">REGISTRATION</span>
+            TEAM <span className="text-red-400">REGISTRATION CLOSED</span>
           </h2>
         </div>
 
@@ -583,6 +583,12 @@ export function RegistrationSection({ selectedTrack = "Healthcare AI", onOpenRef
           </div>
         ) : (
           <div>
+            {/* REGISTRATION CLOSED NOTICE BANNER */}
+            <div className="mb-8 p-4 rounded-2xl bg-red-950/60 border border-red-500/40 text-red-200 text-xs sm:text-sm font-mono flex items-center gap-3 shadow-[0_0_20px_rgba(239,68,68,0.2)]">
+              <span className="w-2.5 h-2.5 rounded-full bg-red-500 animate-ping shrink-0" />
+              <span className="font-bold text-white">NOTICE: Registrations are officially closed (Concluded September 26, 2026).</span>
+            </div>
+
             {/* STEP PROGRESS BAR */}
             <div className="flex items-center justify-between mb-8 relative">
               {[1, 2, 3, 4].map((stepNum, idx) => (
@@ -1148,21 +1154,10 @@ export function RegistrationSection({ selectedTrack = "Healthcare AI", onOpenRef
 
                   <button
                     type="button"
-                    onClick={handleSubmitRegistration}
-                    disabled={status === "submitting"}
-                    className="px-9 py-4 rounded-full bg-gradient-to-r from-blue-600 via-blue-500 to-sky-600 text-white font-mono text-xs font-bold uppercase tracking-widest flex items-center gap-2.5 shadow-[0_0_30px_rgba(59,130,246,0.5)] hover:scale-105 transition-all cursor-pointer"
+                    disabled={true}
+                    className="px-9 py-4 rounded-full bg-slate-800 text-slate-400 border border-slate-700 font-mono text-xs font-bold uppercase tracking-widest flex items-center gap-2.5 cursor-not-allowed opacity-80"
                   >
-                    {status === "submitting" ? (
-                      <>
-                        <Loader2 className="w-4 h-4 animate-spin text-white" />
-                        <span>SUBMITTING REGISTRATION...</span>
-                      </>
-                    ) : (
-                      <>
-                        <span>SUBMIT REGISTRATION</span>
-                        <ArrowRight className="w-4 h-4 text-white" />
-                      </>
-                    )}
+                    <span>REGISTRATION CLOSED</span>
                   </button>
                 </div>
               </div>

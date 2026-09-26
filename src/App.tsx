@@ -6,8 +6,7 @@ import { CompactFooter } from "./components/CompactFooter";
 import { ScrollBackgroundManager } from "./components/ScrollBackgroundManager";
 import { IntroLoader } from "./components/IntroLoader";
 import { ReferralDashboardModal } from "./components/ReferralDashboardModal";
-import { ReferralGift } from "./components/ReferralGift";
-import { ReferralAnnouncementModal } from "./components/ReferralAnnouncementModal";
+import { RegistrationClosedModal } from "./components/RegistrationClosedModal";
 
 // Lazy load non-hero sections below the fold for optimal initial load speed
 const AboutSection = lazy(() => import("./components/AboutSection").then((m) => ({ default: m.AboutSection })));
@@ -34,8 +33,8 @@ function App() {
   const [referralDashboardCode, setReferralDashboardCode] = useState<string>("");
   const [isReferralDashboardOpen, setIsReferralDashboardOpen] = useState<boolean>(false);
 
-  // Auto Announcement Modal (opens 5 seconds after site loaded completely)
-  const [isAnnouncementOpen, setIsAnnouncementOpen] = useState<boolean>(false);
+  // Auto Registration Closed Modal (opens as soon as site loaded)
+  const [isRegistrationClosedOpen, setIsRegistrationClosedOpen] = useState<boolean>(false);
 
   // Preserve home page scroll position when opening dedicated sub-pages
   const homeScrollPosRef = useRef<number>(0);
@@ -132,19 +131,19 @@ function App() {
     };
   }, []);
 
-  // Automatically open announcement popup 2 seconds after the site has loaded completely
+  // Automatically open Registration Closed popup modal as soon as the site has loaded
   useEffect(() => {
     if (isLoading) return;
 
     const timer = setTimeout(() => {
-      setIsAnnouncementOpen(true);
-    }, 2000);
+      setIsRegistrationClosedOpen(true);
+    }, 250);
 
     return () => clearTimeout(timer);
   }, [isLoading]);
 
-  const handleCloseAnnouncement = () => {
-    setIsAnnouncementOpen(false);
+  const handleCloseClosedModal = () => {
+    setIsRegistrationClosedOpen(false);
   };
 
   return (
@@ -153,7 +152,14 @@ function App() {
       
       {/* INITIAL PRELOADER */}
       <AnimatePresence>
-        {isLoading && <IntroLoader onComplete={() => setIsLoading(false)} />}
+        {isLoading && (
+          <IntroLoader
+            onComplete={() => {
+              setIsLoading(false);
+              setIsRegistrationClosedOpen(true);
+            }}
+          />
+        )}
       </AnimatePresence>
 
       {/* Dynamic Scroll-Driven Fixed Background */}
@@ -237,19 +243,17 @@ function App() {
         referralCode={referralDashboardCode}
       />
 
-      {/* AUTO-POPUP REFERRAL & EARLY BIRD ANNOUNCEMENT (HIGHEST Z-INDEX) */}
-      <ReferralAnnouncementModal
-        isOpen={isAnnouncementOpen}
-        onClose={handleCloseAnnouncement}
-        onRegister={() => {
-          handleCloseAnnouncement();
-          handleOpenRegisterWithTrack();
+      {/* AUTO-POPUP REGISTRATION CLOSED ANIMATION */}
+      <RegistrationClosedModal
+        isOpen={isRegistrationClosedOpen}
+        onClose={handleCloseClosedModal}
+        onViewTimeline={() => {
+          handleCloseClosedModal();
+          const el = document.getElementById("timeline");
+          if (el) el.scrollIntoView({ behavior: "smooth" });
         }}
       />
     </div>
-
-    {/* FLOATING REFERRAL GIFT (OUTSIDE OVERFLOW HIDDEN) */}
-    <ReferralGift onOpenRegister={handleOpenRegisterWithTrack} />
     </>
   );
 }
