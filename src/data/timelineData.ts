@@ -9,14 +9,14 @@ export const TIMELINE_PHASES: PhaseItem[] = [
   {
     id: 1,
     phaseId: "PHASE 01",
-    title: "Early Bird Registration",
-    description: "Register for ₹700 per team instead of ₹1,000. Early bird ends on September 21."
+    title: "Early Bird (Closed)",
+    description: "Early bird registration ended on September 21."
   },
   {
     id: 2,
     phaseId: "PHASE 02",
-    title: "Registration Ends",
-    description: "Registration ends on September 26. Fee returns to ₹1,000 per team."
+    title: "Registration Closed",
+    description: "Team registrations officially closed on September 26. Review in progress."
   },
   {
     id: 3,

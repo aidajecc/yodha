@@ -23,8 +23,7 @@ import { IntroLoader } from "@/components/IntroLoader";
 import { PaymentPortalPage } from "@/components/PaymentPortalPage";
 import { trackUserSession } from "@/lib/firebase";
 
-import { ReferralGift } from "@/components/ReferralGift";
-import { ReferralAnnouncementModal } from "@/components/ReferralAnnouncementModal";
+import { RegistrationClosedModal } from "@/components/RegistrationClosedModal";
 
 export default function Home() {
   const [isLoading, setIsLoading] = useState(true);
@@ -39,8 +38,8 @@ export default function Home() {
   const [referralDashboardCode, setReferralDashboardCode] = useState<string>("");
   const [isReferralDashboardOpen, setIsReferralDashboardOpen] = useState<boolean>(false);
 
-  // Auto Announcement Modal (opens 2 seconds after site loaded completely)
-  const [isAnnouncementOpen, setIsAnnouncementOpen] = useState<boolean>(false);
+  // Auto Registration Closed Modal (opens as soon as site loaded)
+  const [isRegistrationClosedOpen, setIsRegistrationClosedOpen] = useState<boolean>(false);
 
   // Preserve home page scroll position when opening dedicated sub-pages
   const homeScrollPosRef = useRef<number>(0);
@@ -156,15 +155,15 @@ export default function Home() {
     };
   }, []);
 
-  // Automatically open announcement popup 2 seconds after the site is loaded completely
+  // Automatically open Registration Closed popup modal as soon as the site is loaded
   // (only on main site, never when the user is in the payment portal)
   useEffect(() => {
     if (isLoading || activePage === "payment") return;
 
     const timer = setTimeout(() => {
       if (window.location.pathname.includes("pay") || window.location.search.includes("teamId")) return;
-      setIsAnnouncementOpen(true);
-    }, 2000);
+      setIsRegistrationClosedOpen(true);
+    }, 250);
 
     return () => clearTimeout(timer);
   }, [isLoading, activePage]);
@@ -180,6 +179,7 @@ export default function Home() {
             onComplete={() => {
               setIsLoading(false);
               setIsHeroRevealed(true);
+              setIsRegistrationClosedOpen(true);
             }}
           />
         )}
@@ -275,21 +275,19 @@ export default function Home() {
         referralCode={referralDashboardCode}
       />
 
-      {/* AUTO-POPUP REFERRAL & EARLY BIRD ANNOUNCEMENT (HIGHEST Z-INDEX, SUPPRESSED ON PAYMENT PAGE) */}
+      {/* AUTO-POPUP REGISTRATION CLOSED ANIMATION (SUPPRESSED ON PAYMENT PAGE) */}
       {activePage !== "payment" && (
-        <ReferralAnnouncementModal
-          isOpen={isAnnouncementOpen}
-          onClose={() => setIsAnnouncementOpen(false)}
-          onRegister={() => {
-            setIsAnnouncementOpen(false);
-            handleOpenRegisterWithTrack();
+        <RegistrationClosedModal
+          isOpen={isRegistrationClosedOpen}
+          onClose={() => setIsRegistrationClosedOpen(false)}
+          onViewTimeline={() => {
+            setIsRegistrationClosedOpen(false);
+            const el = document.getElementById("timeline");
+            if (el) el.scrollIntoView({ behavior: "smooth" });
           }}
         />
       )}
     </div>
-
-    {/* FLOATING REFERRAL GIFT */}
-    <ReferralGift onOpenRegister={handleOpenRegisterWithTrack} />
     </>
   );
 }

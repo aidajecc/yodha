@@ -28,7 +28,7 @@ const GUIDELINES: GuidelineItem[] = [
   {
     id: "02",
     icon: CreditCard,
-    text: "A registration fee of ₹700 per team is mandatory to confirm participation.",
+    text: "Registration is now officially closed. Shortlisted teams will be notified for offline confirmation.",
   },
   {
     id: "03",

@@ -28,12 +28,12 @@ export async function POST(request: NextRequest) {
     let htmlContent = "";
     let textContent = "";
 
-    // Support 1: Full Registration Email Payload
+    // Support 1: Full Registration Email Payload (Blocked - Registrations Closed)
     if (body.leaderEmail && body.teamName) {
-      const regPayload = body as RegistrationEmailPayload;
-      to = regPayload.leaderEmail?.trim();
-      subject = `Welcome to YODHA 2 – Registration Confirmed 🎉 (${regPayload.teamName})`;
-      htmlContent = generateEmailTemplate(regPayload);
+      return NextResponse.json(
+        { success: false, error: "Team registrations for YODHA 2.0 are officially closed. No new submissions are accepted." },
+        { status: 403 }
+      );
     } 
     // Support 2: Standard Direct Send Payload { to, subject, text, html }
     else {

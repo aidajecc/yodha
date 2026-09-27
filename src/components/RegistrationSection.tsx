@@ -85,6 +85,11 @@ export function RegistrationSection({ selectedTrack = "Healthcare AI", onOpenRef
   const [showReferralInfo, setShowReferralInfo] = useState(false);
   const [showFullDetails, setShowFullDetails] = useState(false);
 
+  // Set persistent registration closed error on mount
+  useEffect(() => {
+    setErrorMessage("Notice: Registrations for YODHA 2.0 are officially closed. No new submissions can be accepted.");
+  }, []);
+
   // Auto-detect referral code from localStorage on mount and auto-verify
   useEffect(() => {
     try {
@@ -222,124 +227,17 @@ export function RegistrationSection({ selectedTrack = "Healthcare AI", onOpenRef
     setMembers(updated);
   };
 
-  // Step 1 Validation & Fast Instant Transition
+  // Step 1 Validation & Fast Instant Transition (Blocked: Closed)
   const handleNextFromStep1 = async () => {
-    if (!teamName.trim()) {
-      setErrorMessage("Please enter your Team Name.");
-      return;
-    }
-
-    if (!selectedPS) {
-      setErrorMessage("Please select a problem statement below before proceeding.");
-      return;
-    }
-
-    if (!pptLink.trim()) {
-      setErrorMessage("Please enter your Google Drive PPT Presentation Link.");
-      return;
-    }
-
-    if (!pptLink.toLowerCase().includes("drive.google.com") && !pptLink.toLowerCase().includes("docs.google.com")) {
-      setErrorMessage("Please provide a valid Google Drive link (e.g. https://drive.google.com/...)");
-      return;
-    }
-
-    if (usedReferralCode.trim()) {
-      if (referralCheckState.status === "checking") {
-        setErrorMessage("Validating Warrior Referral Code, please wait...");
-        return;
-      }
-      if (referralCheckState.status === "invalid") {
-        setErrorMessage("Invalid Referral Code. Please clear or correct the code to proceed.");
-        return;
-      }
-    }
-
-    // Immediately advance to Step 2 for instant UI response
-    setErrorMessage("");
-    setCurrentStep(2);
+    setErrorMessage("Team registrations for YODHA 2.0 are officially closed. No new submissions are being accepted.");
+    return;
   };
 
-  // Final Form Submission (Data updated ONLY on final submit, ultra-fast & non-blocking)
+  // Final Form Submission (Blocked: Closed)
   const handleSubmitRegistration = async () => {
-    const isTestEmail = leader.email.toLowerCase().includes("adhithyan");
-
-    if (!isTestEmail && Object.keys(fieldErrors).length > 0) {
-      setErrorMessage("Please resolve all duplicate email and phone errors before submitting.");
-      return;
-    }
-
-    if (usedReferralCode.trim() && referralCheckState.status === "invalid") {
-      setErrorMessage("Invalid Warrior Referral Code. Please verify the code before submitting.");
-      return;
-    }
-
-    setStatus("submitting");
-    setErrorMessage("");
-
-    const activeMembers = members.slice(0, teamSize - 1);
-    const fullTrackName = selectedPS
-      ? `${selectedPS.category} AI - [ID #${selectedPS.id}] ${selectedPS.title}`
-      : track;
-
-    const payload: TeamRegistrationData = {
-      teamName,
-      teamSize,
-      track: fullTrackName,
-      problemStatementId: selectedPS?.id,
-      problemStatementTitle: selectedPS?.title,
-      pptLink: pptLink.trim(),
-      leader,
-      members: activeMembers,
-      usedReferralCode: usedReferralCode.trim().toUpperCase() || undefined,
-    };
-
-    try {
-      // 1. SAVE TO FIREBASE ONLY NOW ON FINAL SUBMIT
-      const saveRes = await saveTeamToFirebase(payload);
-      if (!saveRes.success) {
-        setStatus("error");
-        setErrorMessage(saveRes.error || "Failed to submit team registration.");
-        return;
-      }
-
-      setTeamPassId("YODHA-" + Math.floor(100000 + Math.random() * 900000));
-      if (saveRes.warriorReferralCode) {
-        setGeneratedReferralCode(saveRes.warriorReferralCode);
-      }
-
-      // 2. SHOW INSTANT CONFIRMATION & CONFETTI WITHOUT WAITING FOR BACKGROUND TASKS
-      setStatus("success");
-      confetti({
-        particleCount: 140,
-        spread: 85,
-        origin: { y: 0.6 },
-        colors: ["#38bdf8", "#818cf8", "#c084fc", "#34d399", "#fbbf24"],
-      });
-
-      // 3. RUN BACKGROUND NOTIFICATIONS ASYNCHRONOUSLY (NON-BLOCKING)
-      const allParticipants = [
-        { fullName: leader.fullName, email: leader.email, role: "Leader" as const, phone: leader.phone, organization: leader.organization },
-        ...activeMembers.map((m) => ({ fullName: m.fullName, email: m.email, role: "Member" as const, phone: m.phone, organization: m.organization })),
-      ];
-
-      submitTeamToGoogleForms(payload).catch((err) => console.warn("Google forms bg sync:", err));
-      sendTeamWelcomeEmails({
-        teamName,
-        track: fullTrackName,
-        problemStatementId: selectedPS?.id,
-        problemStatementTitle: selectedPS?.title,
-        pptLink: pptLink.trim(),
-        participants: allParticipants,
-        warriorReferralCode: saveRes.warriorReferralCode,
-      }).then((res) => {
-        setEmailStatus({ dispatched: res.success, count: res.dispatchedTo.length });
-      }).catch((err) => console.warn("Email bg dispatch:", err));
-
-    } catch (err: any) {
-      setStatus("error");
-      setErrorMessage(err.message || "Failed to submit team registration.");
-    }
+    setStatus("error");
+    setErrorMessage("Team registrations for YODHA 2.0 are officially closed. No new submissions can be accepted.");
+    return;
   };
 
   return (
@@ -353,7 +251,7 @@ export function RegistrationSection({ selectedTrack = "Healthcare AI", onOpenRef
         {/* CENTERED BIG HEADER BRANDING (NO ICON) */}
         <div className="flex flex-col items-center justify-center text-center border-b border-blue-500/20 pb-6 mb-8">
           <h2 className="text-3xl sm:text-5xl lg:text-6xl font-black font-heading text-white tracking-tight uppercase">
-            TEAM <span className="text-blue-400">REGISTRATION</span>
+            TEAM <span className="text-red-400">REGISTRATION CLOSED</span>
           </h2>
         </div>
 
@@ -583,6 +481,12 @@ export function RegistrationSection({ selectedTrack = "Healthcare AI", onOpenRef
           </div>
         ) : (
           <div>
+            {/* REGISTRATION CLOSED NOTICE BANNER */}
+            <div className="mb-8 p-4 rounded-2xl bg-red-950/60 border border-red-500/40 text-red-200 text-xs sm:text-sm font-mono flex items-center gap-3 shadow-[0_0_20px_rgba(239,68,68,0.2)]">
+              <span className="w-2.5 h-2.5 rounded-full bg-red-500 animate-ping shrink-0" />
+              <span className="font-bold text-white">NOTICE: Registrations are officially closed (Concluded September 26, 2026).</span>
+            </div>
+
             {/* STEP PROGRESS BAR */}
             <div className="flex items-center justify-between mb-8 relative">
               {[1, 2, 3, 4].map((stepNum, idx) => (
@@ -861,18 +765,10 @@ export function RegistrationSection({ selectedTrack = "Healthcare AI", onOpenRef
                 <div className="pt-4 flex justify-end">
                   <button
                     type="button"
-                    onClick={handleNextFromStep1}
-                    disabled={checkingTeamName}
-                    className="px-8 py-3.5 rounded-full bg-gradient-to-r from-blue-600 to-sky-600 text-white font-mono text-xs font-bold uppercase tracking-wider flex items-center gap-2 shadow-lg hover:scale-105 transition-all cursor-pointer"
+                    disabled={true}
+                    className="px-8 py-3.5 rounded-full bg-slate-800 text-slate-400 border border-slate-700 font-mono text-xs font-bold uppercase tracking-wider flex items-center gap-2 cursor-not-allowed opacity-80"
                   >
-                    {checkingTeamName ? (
-                      <Loader2 className="w-4 h-4 animate-spin text-white" />
-                    ) : (
-                      <>
-                        <span>NEXT: LEADER DETAILS</span>
-                        <ChevronRight className="w-4 h-4 text-white" />
-                      </>
-                    )}
+                    <span>REGISTRATION CLOSED</span>
                   </button>
                 </div>
               </div>
@@ -978,22 +874,10 @@ export function RegistrationSection({ selectedTrack = "Healthcare AI", onOpenRef
                   </button>
                   <button
                     type="button"
-                    onClick={() => {
-                      if (!leader.fullName || !leader.email || !leader.phone || !leader.organization) {
-                        setErrorMessage("Please fill all required Leader fields.");
-                        return;
-                      }
-                      if (!/^\d{10}$/.test(leader.phone.trim())) {
-                        setErrorMessage("Leader mobile number must be exactly 10 numeric digits.");
-                        return;
-                      }
-                      setErrorMessage("");
-                      setCurrentStep(3);
-                    }}
-                    className="px-8 py-3.5 rounded-full bg-blue-600 hover:bg-blue-500 text-white font-mono text-xs font-bold uppercase tracking-wider flex items-center gap-2"
+                    disabled={true}
+                    className="px-8 py-3.5 rounded-full bg-slate-800 text-slate-400 border border-slate-700 font-mono text-xs font-bold uppercase tracking-wider flex items-center gap-2 cursor-not-allowed opacity-80"
                   >
-                    <span>NEXT: TEAM MEMBERS</span>
-                    <ChevronRight className="w-4 h-4 text-white" />
+                    <span>REGISTRATION CLOSED</span>
                   </button>
                 </div>
               </div>
@@ -1086,26 +970,10 @@ export function RegistrationSection({ selectedTrack = "Healthcare AI", onOpenRef
                   </button>
                   <button
                     type="button"
-                    onClick={() => {
-                      const activeMembers = members.slice(0, teamSize - 1);
-                      for (let i = 0; i < activeMembers.length; i++) {
-                        const m = activeMembers[i];
-                        if (!m.fullName.trim() || !m.email.trim() || !m.phone.trim() || !m.organization.trim()) {
-                          setErrorMessage(`Please fill all required fields for Member #${i + 2}.`);
-                          return;
-                        }
-                        if (!/^\d{10}$/.test(m.phone.trim())) {
-                          setErrorMessage(`Member #${i + 2} mobile number must be exactly 10 numeric digits.`);
-                          return;
-                        }
-                      }
-                      setErrorMessage("");
-                      setCurrentStep(4);
-                    }}
-                    className="px-8 py-3.5 rounded-full bg-blue-600 hover:bg-blue-500 text-white font-mono text-xs font-bold uppercase tracking-wider flex items-center gap-2 transition-all cursor-pointer hover:scale-105 active:scale-95"
+                    disabled={true}
+                    className="px-8 py-3.5 rounded-full bg-slate-800 text-slate-400 border border-slate-700 font-mono text-xs font-bold uppercase tracking-wider flex items-center gap-2 cursor-not-allowed opacity-80"
                   >
-                    <span>NEXT: CONFIRM</span>
-                    <ChevronRight className="w-4 h-4 text-white" />
+                    <span>REGISTRATION CLOSED</span>
                   </button>
                 </div>
               </div>
@@ -1148,21 +1016,10 @@ export function RegistrationSection({ selectedTrack = "Healthcare AI", onOpenRef
 
                   <button
                     type="button"
-                    onClick={handleSubmitRegistration}
-                    disabled={status === "submitting"}
-                    className="px-9 py-4 rounded-full bg-gradient-to-r from-blue-600 via-blue-500 to-sky-600 text-white font-mono text-xs font-bold uppercase tracking-widest flex items-center gap-2.5 shadow-[0_0_30px_rgba(59,130,246,0.5)] hover:scale-105 transition-all cursor-pointer"
+                    disabled={true}
+                    className="px-9 py-4 rounded-full bg-slate-800 text-slate-400 border border-slate-700 font-mono text-xs font-bold uppercase tracking-widest flex items-center gap-2.5 cursor-not-allowed opacity-80"
                   >
-                    {status === "submitting" ? (
-                      <>
-                        <Loader2 className="w-4 h-4 animate-spin text-white" />
-                        <span>SUBMITTING REGISTRATION...</span>
-                      </>
-                    ) : (
-                      <>
-                        <span>SUBMIT REGISTRATION</span>
-                        <ArrowRight className="w-4 h-4 text-white" />
-                      </>
-                    )}
+                    <span>REGISTRATION CLOSED</span>
                   </button>
                 </div>
               </div>

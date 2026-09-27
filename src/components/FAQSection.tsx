@@ -42,15 +42,15 @@ const FAQ_ITEMS: FAQItem[] = [
   },
   {
     id: "06",
-    question: "What is the registration fee?",
+    question: "Is registration still open?",
     answer:
-      "The registration fee is ₹700 per team. Teams must complete the online registration and submit their idea for the selection process.",
+      "No, team registrations for YODHA 2.0 are officially closed as of September 26, 2026. No new registrations are being accepted.",
   },
   {
     id: "07",
     question: "How are teams selected?",
     answer:
-      "Teams first register online and submit a brief idea based on the given problem statements. The submitted ideas are evaluated by the expert panel, and shortlisted teams are invited for the 48-hour offline hackathon.",
+      "Registered teams submitted their PPT ideas for evaluation. Submitted proposals are currently being evaluated by our expert review panel to shortlist teams for the 48-hour offline hackathon.",
   },
   {
     id: "08",

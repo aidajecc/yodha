@@ -93,9 +93,9 @@ const TIMELINE_HIGHLIGHTS = [
   {
     day: "PHASE 1",
     time: "STEP 01",
-    title: "Online Registration",
-    desc: "Submit team details and primary area of interest (Healthcare / Environment AI).",
-    status: "upcoming",
+    title: "Registration Closed",
+    desc: "Team registrations officially closed on September 26, 2026.",
+    status: "completed",
   },
   {
     day: "PHASE 2",
@@ -553,8 +553,8 @@ export function HeroCommandCenter({ onOpenRegister }: HeroCommandCenterProps) {
       {/* Bottom Status Dock */}
       <div className="px-5 py-2.5 border-t border-slate-800/80 bg-slate-900/60 flex items-center justify-between text-[10px] font-mono text-slate-400">
         <div className="flex items-center gap-2">
-          <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
-          <span>Registrations Open • yodha.aidajecc.in</span>
+          <span className="w-2 h-2 rounded-full bg-red-400 animate-ping" />
+          <span>Registration Closed • yodha.aidajecc.in</span>
         </div>
         <span>Jyothi Engineering College (Autonomous)</span>
       </div>

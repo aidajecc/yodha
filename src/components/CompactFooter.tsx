@@ -114,15 +114,9 @@ export function CompactFooter({ onOpenRegister }: CompactFooterProps) {
             FAQ
           </button>
           <span className="text-slate-700 hidden sm:inline">•</span>
-          <button
-            onClick={() => {
-              if (onOpenRegister) onOpenRegister();
-              else scrollToSection("register");
-            }}
-            className="text-blue-400 hover:text-blue-300 font-bold transition-colors cursor-pointer"
-          >
-            Register
-          </button>
+          <span className="text-red-400 font-bold select-none">
+            Registration Closed
+          </span>
         </nav>
 
         {/* DESKTOP SOCIAL & BACK TO TOP BUTTONS */}
